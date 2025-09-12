@@ -106,6 +106,22 @@
                 display: none;
             }
 
+            .deposito-section {
+                margin-top: 40px;
+                background: white;
+                border-radius: 10px;
+                padding: 30px;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                border-left: 5px solid #007bff;
+            }
+
+            .deposito-title {
+                font-size: 20px;
+                font-weight: bold;
+                color: #007bff;
+                margin-bottom: 20px;
+            }
+
             .sinpe-section {
                 margin-top: 40px;
                 background: white;
@@ -169,6 +185,21 @@
                 background: #218838;
             }
 
+            .btn-deposito {
+                background: #007bff;
+                color: white;
+                border: none;
+                padding: 12px 20px;
+                border-radius: 5px;
+                font-size: 14px;
+                cursor: pointer;
+                margin-top: 10px;
+            }
+
+            .btn-deposito:hover {
+                background: #0056b3;
+            }
+
         </style>
     </h:head>
 
@@ -179,9 +210,9 @@
             </div>
 
             <h:form>
-                
+
                 <h:messages id="msgs" globalOnly="true" showDetail="true" />
-                
+
                 <h:panelGroup rendered="#{not empty cuentaController.cuentas}">
                     <div class="cuentas-grid">
                         <ui:repeat value="#{cuentaController.cuentas}" var="cuenta">
@@ -204,25 +235,6 @@
                                 <div class="moneda">
                                     #{cuenta.moneda.descripcion}
                                 </div>
-
-
-                                <h:panelGroup rendered="#{cuenta.estado == 'ACTIVA'}">
-                                    <div class="deposito-section">                                        
-                                        <div class="deposito-title">Realizar Depósito</div>
-                                        <div class="deposito-form">
-                                            <h:inputText value="#{cuentaController.montoDeposito}" 
-                                                         styleClass="monto-input"
-                                                         pt:placeholder="Monto a depositar">
-                                                <f:convertNumber type="currency" currencySymbol=""/>
-                                            </h:inputText>
-                                            <h:commandButton value="Depositar" 
-                                                             styleClass="btn-deposito"
-                                                             action="#{cuentaController.realizarDeposito()}">
-                                                <f:ajax execute="@form" render="@form"/>
-                                            </h:commandButton>
-                                        </div>
-                                    </div>
-                                </h:panelGroup>
                             </div>
                         </ui:repeat>
                     </div>
@@ -234,6 +246,51 @@
                         <p>Este cliente no tiene cuentas registradas en el sistema.</p>
                     </div>
                 </h:panelGroup>
+
+
+
+
+                <div class="deposito-section">
+                    <div class="deposito-title">Transferencia entre Cuentas</div>
+
+                    <div class="form-group">
+                        <h:outputLabel for="cuentaOrigenDeposito" value="Cuenta origen:" styleClass="form-label" />
+                        <h:selectOneMenu id="cuentaOrigenDeposito" value="#{cuentaController.cuentaOrigenId}" styleClass="form-select">
+                            <f:selectItem itemValue="0" itemLabel="-- Seleccione cuenta origen --" />
+                            <f:selectItems value="#{cuentaController.cuentas}" var="cuenta" 
+                                           itemValue="#{cuenta.id}" 
+                                           itemLabel="#{cuenta.numeroMostrar} - #{cuenta.saldoFormateado}" />
+                        </h:selectOneMenu>
+                    </div>
+
+                    <div class="form-group">
+                        <h:outputLabel for="cuentaDestinoDeposito" value="Cuenta destino:" styleClass="form-label" />
+                        <h:selectOneMenu id="cuentaDestinoDeposito" value="#{cuentaController.cuentaDepositoId}" styleClass="form-select">
+                            <f:selectItem itemValue="0" itemLabel="-- Seleccione cuenta destino --" />
+                            <f:selectItems value="#{cuentaController.cuentas}" var="cuenta" 
+                                           itemValue="#{cuenta.id}" 
+                                           itemLabel="#{cuenta.numeroMostrar} - #{cuenta.saldoFormateado}" />
+                        </h:selectOneMenu>
+                    </div>
+
+                    <div class="form-group">
+                        <h:outputLabel for="montoDeposito" value="Monto:" styleClass="form-label" />
+                        <h:inputText id="montoDeposito" 
+                                     value="#{cuentaController.montoDeposito}" 
+                                     styleClass="form-input"
+                                     pt:placeholder="0.00">
+                            <f:convertNumber type="currency" currencySymbol=""/>
+                        </h:inputText>
+                    </div>
+
+                    <h:commandButton value="Realizar Transferencia" 
+                                     styleClass="btn-deposito"
+                                     action="#{cuentaController.realizarDeposito()}">
+                        <f:ajax execute="@form" render="@form"/>
+                    </h:commandButton>
+                </div>
+
+
 
                 <div class="sinpe-section">
                     <div class="sinpe-title">SINPE Móvil</div>

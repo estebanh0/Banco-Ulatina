@@ -199,13 +199,9 @@ public class CuentaController implements Serializable {
                 .addMessage(null, new FacesMessage(severity, error, detallado));
     }
 
-    public BigDecimal getMontoDeposito() {
-        return montoDeposito;
-    }
+    public BigDecimal getMontoDeposito() {return montoDeposito;}
 
-    public void setMontoDeposito(BigDecimal montoDeposito) {
-        this.montoDeposito = montoDeposito;
-    }
+    public void setMontoDeposito(BigDecimal montoDeposito) {this.montoDeposito = montoDeposito;}
 
     public List<Cuenta> getCuentas() {
         if (cuentas == null) {
@@ -214,48 +210,34 @@ public class CuentaController implements Serializable {
         return cuentas;
     }
 
-    public void setCuentas(List<Cuenta> cuentas) {
-        this.cuentas = cuentas;
-    }
+    public int getCuentaOrigenId() {return cuentaOrigenId;}
 
-    public int getClienteId() {
-        return clienteId;
-    }
+    public void setCuentaOrigenId(int cuentaOrigenId) {this.cuentaOrigenId = cuentaOrigenId;}
 
-    public void setClienteId(int clienteId) {
-        this.clienteId = clienteId;
-    }
+    public int getCuentaDepositoId() {return cuentaDepositoId;}
 
-    public int getCuentaSinpeOrigenId() {
-        return cuentaSinpeOrigenId;
-    }
+    public void setCuentaDepositoId(int cuentaDepositoId) {this.cuentaDepositoId = cuentaDepositoId;}
+    
+    public void setCuentas(List<Cuenta> cuentas) {this.cuentas = cuentas;}
 
-    public void setCuentaSinpeOrigenId(int cuentaSinpeOrigenId) {
-        this.cuentaSinpeOrigenId = cuentaSinpeOrigenId;
-    }
+    public int getClienteId() {return clienteId;}
 
-    public String getNumeroDestinoSinpe() {
-        return numeroDestinoSinpe;
-    }
+    public void setClienteId(int clienteId) {this.clienteId = clienteId;}
 
-    public void setNumeroDestinoSinpe(String numeroDestinoSinpe) {
-        this.numeroDestinoSinpe = numeroDestinoSinpe;
-    }
+    public int getCuentaSinpeOrigenId() {return cuentaSinpeOrigenId;}
 
-    public BigDecimal getMontoSinpe() {
-        return montoSinpe;
-    }
+    public void setCuentaSinpeOrigenId(int cuentaSinpeOrigenId) {this.cuentaSinpeOrigenId = cuentaSinpeOrigenId;}
 
-    public void setMontoSinpe(BigDecimal montoSinpe) {
-        this.montoSinpe = montoSinpe;
-    }
+    public String getNumeroDestinoSinpe() {return numeroDestinoSinpe;}
 
-    public String getDescripcionSinpe() {
-        return descripcionSinpe;
-    }
+    public void setNumeroDestinoSinpe(String numeroDestinoSinpe) {this.numeroDestinoSinpe = numeroDestinoSinpe;}
 
-    public void setDescripcionSinpe(String descripcionSinpe) {
-        this.descripcionSinpe = descripcionSinpe;
-    }
+    public BigDecimal getMontoSinpe() {return montoSinpe;}
+
+    public void setMontoSinpe(BigDecimal montoSinpe) {this.montoSinpe = montoSinpe;}
+
+    public String getDescripcionSinpe() {return descripcionSinpe;}
+
+    public void setDescripcionSinpe(String descripcionSinpe) {this.descripcionSinpe = descripcionSinpe;}
 
 }
