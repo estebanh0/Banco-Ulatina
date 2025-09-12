@@ -1,12 +1,14 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="http://java.sun.com/jsf/html"
-      xmlns:ui="http://java.sun.com/jsf/facelets">
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+      xmlns:f="jakarta.faces.core">
 
     <h:head>
         <title>Mis Cuentas - Banco U Latina</title>
         <style>
-            
+
             body {
                 font-family: Arial;
                 background-color: #f5f5f5;
@@ -95,14 +97,22 @@
                 margin-bottom: 20px;
                 color: #ccc;
             }
+
+            .cuenta-inactiva {
+                opacity: 0.7;
+            }
+
+            .cuenta-inactiva .deposito-section {
+                display: none;
+            }
+
         </style>
     </h:head>
 
     <h:body>
         <div class="container">
             <div class="header">
-                <h1>Mis Cuentas</h1>
-                <h:messages globalOnly="true" showDetail="true" />
+                <h1>Mis Cuentas</h1>               
             </div>
 
             <h:form>
@@ -128,6 +138,29 @@
                                 <div class="moneda">
                                     #{cuenta.moneda.descripcion}
                                 </div>
+
+
+                                <h:panelGroup rendered="#{cuenta.estado == 'ACTIVA'}">
+                                    <div class="deposito-section">
+                                        <h:messages id="msgs" globalOnly="true" showDetail="true" />
+                                        <div class="deposito-title">Realizar Depósito</div>
+                                        <div class="deposito-form">
+                                            <h:inputText value="#{cuentaController.montoDeposito}" 
+                                                         styleClass="monto-input"
+                                                         pt:placeholder="Monto a depositar">
+                                                <f:convertNumber type="currency" currencySymbol=""/>
+                                            </h:inputText>
+                                            <h:commandButton value="Depositar" 
+                                                             styleClass="btn-deposito"
+                                                             action="#{cuentaController.realizarDeposito()}">
+                                                <f:ajax execute="@form" render="@form"/>
+                                            </h:commandButton>
+                                        </div>
+                                    </div>
+                                </h:panelGroup>
+
+
+
                             </div>
                         </ui:repeat>
                     </div>
