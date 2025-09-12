@@ -7,6 +7,7 @@ package com.ulatina.banco.service;
 import com.ulatina.banco.model.Cuenta;
 import com.ulatina.banco.model.Cuenta.Moneda;
 import com.ulatina.banco.model.Cuenta.EstadoCuenta;
+import java.math.BigDecimal;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -99,6 +100,37 @@ public class CuentaService extends Service {
         }
 
         return cuenta;
+    }
+    
+    public boolean realizarTransferencia(int cuentaOrigenId, int cuentaDestinoId, BigDecimal monto) 
+            throws SQLException, ClassNotFoundException {
+        
+        PreparedStatement ps = null;
+        
+        try {
+            conectarBD();
+            
+            // Restar de cuenta origen
+            String sqlOrigen = "UPDATE cuenta SET saldo = saldo - ? WHERE id = ?";
+            ps = conexion.prepareStatement(sqlOrigen);
+            ps.setBigDecimal(1, monto);
+            ps.setInt(2, cuentaOrigenId);
+            ps.executeUpdate();
+            cerrarPreparedStatement(ps);
+            
+            // Sumar a cuenta destino
+            String sqlDestino = "UPDATE cuenta SET saldo = saldo + ? WHERE id = ?";
+            ps = conexion.prepareStatement(sqlDestino);
+            ps.setBigDecimal(1, monto);
+            ps.setInt(2, cuentaDestinoId);
+            int resultado = ps.executeUpdate();
+            
+            return resultado > 0;
+            
+        } finally {
+            cerrarPreparedStatement(ps);
+            cerrarConexion();
+        }
     }
 
 }
