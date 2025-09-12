@@ -16,7 +16,7 @@
             }
 
             .container {
-                max-width: 1200px;
+                max-width: 1600px;
                 margin: 0 auto;
             }
 
@@ -106,6 +106,69 @@
                 display: none;
             }
 
+            .sinpe-section {
+                margin-top: 40px;
+                background: white;
+                border-radius: 10px;
+                padding: 30px;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                border-left: 5px solid #28a745;
+            }
+
+            .sinpe-title {
+                font-size: 20px;
+                font-weight: bold;
+                color: #28a745;
+                margin-bottom: 20px;
+            }
+
+            .form-group {
+                margin-bottom: 15px;
+            }
+
+            .form-label {
+                display: block;
+                font-weight: bold;
+                margin-bottom: 5px;
+                color: #333;
+            }
+
+            .form-input, .form-select {
+                width: 100%;
+                padding: 10px;
+                border: 1px solid #ddd;
+                border-radius: 5px;
+                font-size: 14px;
+                max-width: 300px;
+            }
+
+            .form-textarea {
+                width: 100%;
+                padding: 10px;
+                border: 1px solid #ddd;
+                border-radius: 5px;
+                font-size: 14px;
+                resize: vertical;
+                min-height: 60px;
+                max-width: 300px;
+                font-family: Arial, sans-serif;
+            }
+
+            .btn-sinpe {
+                background: #28a745;
+                color: white;
+                border: none;
+                padding: 12px 20px;
+                border-radius: 5px;
+                font-size: 14px;
+                cursor: pointer;
+                margin-top: 10px;
+            }
+
+            .btn-sinpe:hover {
+                background: #218838;
+            }
+
         </style>
     </h:head>
 
@@ -116,6 +179,9 @@
             </div>
 
             <h:form>
+                
+                <h:messages id="msgs" globalOnly="true" showDetail="true" />
+                
                 <h:panelGroup rendered="#{not empty cuentaController.cuentas}">
                     <div class="cuentas-grid">
                         <ui:repeat value="#{cuentaController.cuentas}" var="cuenta">
@@ -141,8 +207,7 @@
 
 
                                 <h:panelGroup rendered="#{cuenta.estado == 'ACTIVA'}">
-                                    <div class="deposito-section">
-                                        <h:messages id="msgs" globalOnly="true" showDetail="true" />
+                                    <div class="deposito-section">                                        
                                         <div class="deposito-title">Realizar Depósito</div>
                                         <div class="deposito-form">
                                             <h:inputText value="#{cuentaController.montoDeposito}" 
@@ -158,9 +223,6 @@
                                         </div>
                                     </div>
                                 </h:panelGroup>
-
-
-
                             </div>
                         </ui:repeat>
                     </div>
@@ -172,6 +234,52 @@
                         <p>Este cliente no tiene cuentas registradas en el sistema.</p>
                     </div>
                 </h:panelGroup>
+
+                <div class="sinpe-section">
+                    <div class="sinpe-title">SINPE Móvil</div>
+
+                    <div class="form-group">
+                        <h:outputLabel for="cuentaOrigen" value="Cuenta origen:" styleClass="form-label" />
+                        <h:selectOneMenu id="cuentaOrigen" value="#{cuentaController.cuentaSinpeOrigenId}" styleClass="form-select">
+                            <f:selectItem itemValue="0" itemLabel="-- Seleccione una cuenta --" />
+                            <f:selectItems value="#{cuentaController.cuentas}" var="cuenta" 
+                                           itemValue="#{cuenta.id}" 
+                                           itemLabel="#{cuenta.numeroMostrar} - #{cuenta.saldoFormateado}" />
+                        </h:selectOneMenu>
+                    </div>
+
+                    <div class="form-group">
+                        <h:outputLabel for="numeroDestino" value="Número destino:" styleClass="form-label" />
+                        <h:inputText id="numeroDestino" 
+                                     value="#{cuentaController.numeroDestinoSinpe}" 
+                                     styleClass="form-input"
+                                     pt:placeholder="8888-8888" />
+                    </div>
+
+                    <div class="form-group">
+                        <h:outputLabel for="monto" value="Monto:" styleClass="form-label" />
+                        <h:inputText id="monto" 
+                                     value="#{cuentaController.montoSinpe}" 
+                                     styleClass="form-input"
+                                     pt:placeholder="0.00">
+                            <f:convertNumber type="currency" currencySymbol=""/>
+                        </h:inputText>
+                    </div>
+
+                    <div class="form-group">
+                        <h:outputLabel for="descripcion" value="Descripción:" styleClass="form-label" />
+                        <h:inputTextarea id="descripcion" 
+                                         value="#{cuentaController.descripcionSinpe}" 
+                                         styleClass="form-textarea"
+                                         pt:placeholder="Motivo de la transferencia" />
+                    </div>
+
+                    <h:commandButton value="Enviar SINPE" 
+                                     styleClass="btn-sinpe"
+                                     action="#{cuentaController.realizarSinpe()}">
+                        <f:ajax execute="@form" render="@form"/>
+                    </h:commandButton>
+                </div>
             </h:form>
         </div>
     </h:body>

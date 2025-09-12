@@ -18,12 +18,11 @@ import java.util.List;
  *
  * @author esteban
  * @since 12/9/25
- * 
+ *
  * - Consultas SQL con sus excepsiones
- * 
- * - Obtenemos todas las cuentas que tenga el cliente mediante su id
- * - "BuscarCuentaPorId" es un método que de momento no se utilizará pero para versiones posteriores si
- * 
+ *
+ * - Obtenemos todas las cuentas que tenga el cliente mediante su id - "BuscarCuentaPorId" es un método que de momento no se utilizará pero para versiones posteriores si
+ *
  */
 public class CuentaService extends Service {
 
@@ -35,7 +34,7 @@ public class CuentaService extends Service {
         ResultSet rs = null;
 
         try {
-            
+
             conectarBD();
             String sql = "SELECT id, numero_cuenta, cliente_id, moneda, estado, saldo "
                     + "FROM cuenta WHERE cliente_id = ?";
@@ -51,7 +50,6 @@ public class CuentaService extends Service {
                         Moneda.valueOf(rs.getString("moneda")),
                         EstadoCuenta.valueOf(rs.getString("estado")),
                         rs.getBigDecimal("saldo")
-                        
                 );
                 cuentas.add(cuenta);
             }
@@ -64,8 +62,6 @@ public class CuentaService extends Service {
 
         return cuentas;
     }
-    
-    
 
     public Cuenta buscarCuentaPorId(int id)
             throws SQLException, ClassNotFoundException {
@@ -101,15 +97,15 @@ public class CuentaService extends Service {
 
         return cuenta;
     }
-    
-    public boolean realizarTransferencia(int cuentaOrigenId, int cuentaDestinoId, BigDecimal monto) 
+
+    public boolean realizarTransferencia(int cuentaOrigenId, int cuentaDestinoId, BigDecimal monto)
             throws SQLException, ClassNotFoundException {
-        
+
         PreparedStatement ps = null;
-        
+
         try {
             conectarBD();
-            
+
             // Restar de cuenta origen
             String sqlOrigen = "UPDATE cuenta SET saldo = saldo - ? WHERE id = ?";
             ps = conexion.prepareStatement(sqlOrigen);
@@ -117,16 +113,39 @@ public class CuentaService extends Service {
             ps.setInt(2, cuentaOrigenId);
             ps.executeUpdate();
             cerrarPreparedStatement(ps);
-            
+
             // Sumar a cuenta destino
             String sqlDestino = "UPDATE cuenta SET saldo = saldo + ? WHERE id = ?";
             ps = conexion.prepareStatement(sqlDestino);
             ps.setBigDecimal(1, monto);
             ps.setInt(2, cuentaDestinoId);
             int resultado = ps.executeUpdate();
-            
+
             return resultado > 0;
-            
+
+        } finally {
+            cerrarPreparedStatement(ps);
+            cerrarConexion();
+        }
+    }
+
+    public boolean realizarTransferenciaSinpe(int cuentaOrigenId, BigDecimal monto)
+            throws SQLException, ClassNotFoundException {
+
+        PreparedStatement ps = null;
+
+        try {
+            conectarBD();
+
+            // Solo restar de cuenta origen (transferencia externa)
+            String sqlOrigen = "UPDATE cuenta SET saldo = saldo - ? WHERE id = ?";
+            ps = conexion.prepareStatement(sqlOrigen);
+            ps.setBigDecimal(1, monto);
+            ps.setInt(2, cuentaOrigenId);
+            int resultado = ps.executeUpdate();
+
+            return resultado > 0;
+
         } finally {
             cerrarPreparedStatement(ps);
             cerrarConexion();
