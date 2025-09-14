@@ -7,6 +7,7 @@ package com.ulatina.banco.service;
 import com.ulatina.banco.model.Cuenta;
 import com.ulatina.banco.model.Cuenta.Moneda;
 import com.ulatina.banco.model.Cuenta.EstadoCuenta;
+import com.ulatina.banco.model.Reversa;
 import java.math.BigDecimal;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -21,12 +22,11 @@ import java.util.List;
  *
  * - Consultas SQL con sus excepsiones
  *
- * - Obtenemos todas las cuentas que tenga el cliente mediante su id - "BuscarCuentaPorId" es un método que de momento no se utilizará pero para versiones posteriores si
- *
+ * - Obtenemos todas las cuentas que tenga el cliente mediante su id - "BuscarCuentaPorId" es un método que de momento no se utilizará pero para versiones posteriores si - Metodos correspondientes para transferencias tanto sinpe como entre cuentas bancarias - Funcionalidad de reversas
  */
 public class CuentaService extends Service {
 
-    public List<Cuenta> obtenerCuentasPorClienteId(int clienteId)
+    public List<Cuenta> obtenerCuentasPorClienteId(int clienteId) 
             throws SQLException, ClassNotFoundException {
 
         List<Cuenta> cuentas = new ArrayList<>();
@@ -63,7 +63,7 @@ public class CuentaService extends Service {
         return cuentas;
     }
 
-    public Cuenta buscarCuentaPorId(int id)
+    public Cuenta buscarCuentaPorId(int id) 
             throws SQLException, ClassNotFoundException {
 
         PreparedStatement ps = null;
@@ -98,7 +98,7 @@ public class CuentaService extends Service {
         return cuenta;
     }
 
-    public boolean realizarTransferencia(int cuentaOrigenId, int cuentaDestinoId, BigDecimal monto)
+    public boolean realizarTransferencia(int cuentaOrigenId, int cuentaDestinoId, BigDecimal monto) 
             throws SQLException, ClassNotFoundException {
 
         PreparedStatement ps = null;
@@ -129,7 +129,7 @@ public class CuentaService extends Service {
         }
     }
 
-    public boolean realizarTransferenciaSinpe(int cuentaOrigenId, BigDecimal monto)
+    public boolean realizarTransferenciaSinpe(int cuentaOrigenId, BigDecimal monto) 
             throws SQLException, ClassNotFoundException {
 
         PreparedStatement ps = null;
@@ -142,6 +142,103 @@ public class CuentaService extends Service {
             ps = conexion.prepareStatement(sqlOrigen);
             ps.setBigDecimal(1, monto);
             ps.setInt(2, cuentaOrigenId);
+            int resultado = ps.executeUpdate();
+
+            return resultado > 0;
+
+        } finally {
+            cerrarPreparedStatement(ps);
+            cerrarConexion();
+        }
+    }
+
+    public boolean crearSolicitudReversa(int clienteId, int cuentaId, String descripcion, BigDecimal monto) 
+            throws SQLException, ClassNotFoundException {
+
+        PreparedStatement ps = null;
+
+        try {
+            conectarBD();
+            String sql = "INSERT INTO reversa (cliente_id, cuenta_id, descripcion, monto, estado) VALUES (?, ?, ?, ?, 'PENDIENTE')";
+            ps = conexion.prepareStatement(sql);
+            ps.setInt(1, clienteId);
+            ps.setInt(2, cuentaId);
+            ps.setString(3, descripcion);
+            ps.setBigDecimal(4, monto);
+            int resultado = ps.executeUpdate();
+
+            return resultado > 0;
+
+        } finally {
+            cerrarPreparedStatement(ps);
+            cerrarConexion();
+        }
+    }
+
+    public List<Reversa> obtenerReversasPendientes()
+            throws SQLException, ClassNotFoundException {
+
+        List<Reversa> reversas = new ArrayList<>();
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+
+        try {
+            conectarBD();
+            String sql = "SELECT id, cliente_id, cuenta_id, descripcion, monto, estado FROM reversa WHERE estado = 'PENDIENTE'";
+            ps = conexion.prepareStatement(sql);
+            rs = ps.executeQuery();
+
+            while (rs.next()) {
+                Reversa reversa = new Reversa(
+                        rs.getInt("cliente_id"),
+                        rs.getInt("cuenta_id"),
+                        rs.getString("descripcion"),
+                        rs.getBigDecimal("monto"),
+                        rs.getString("estado")
+                );
+                reversa.setId(rs.getInt("id"));
+                reversas.add(reversa);
+            }
+
+        } finally {
+            cerrarResultSet(rs);
+            cerrarPreparedStatement(ps);
+            cerrarConexion();
+        }
+
+        return reversas;
+    }
+
+    public boolean aprobarReversa(int reversaId)
+            throws SQLException, ClassNotFoundException {
+
+        PreparedStatement ps = null;
+
+        try {
+            conectarBD();
+            String sql = "UPDATE reversa SET estado = 'APROBADA' WHERE id = ?";
+            ps = conexion.prepareStatement(sql);
+            ps.setInt(1, reversaId);
+            int resultado = ps.executeUpdate();
+
+            return resultado > 0;
+
+        } finally {
+            cerrarPreparedStatement(ps);
+            cerrarConexion();
+        }
+    }
+
+    public boolean rechazarReversa(int reversaId)
+            throws SQLException, ClassNotFoundException {
+
+        PreparedStatement ps = null;
+
+        try {
+            conectarBD();
+            String sql = "UPDATE reversa SET estado = 'RECHAZADA' WHERE id = ?";
+            ps = conexion.prepareStatement(sql);
+            ps.setInt(1, reversaId);
             int resultado = ps.executeUpdate();
 
             return resultado > 0;
