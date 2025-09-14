@@ -24,19 +24,26 @@ import java.util.List;
 @ViewScoped
 public class CuentaController implements Serializable {
 
+    //Cuentas
     private List<Cuenta> cuentas;
     private CuentaService cuentaService = new CuentaService();
     private int clienteId = 2;
     private BigDecimal montoDeposito;
-    private int cuentaOrigenId = 3;
-    private int cuentaDepositoId = 1;
+    private int cuentaOrigenId;
+    private int cuentaDepositoId;
 
     //SINPE
     private int cuentaSinpeOrigenId;
     private String numeroDestinoSinpe;
     private BigDecimal montoSinpe;
     private String descripcionSinpe;
-
+    
+    //Reversas
+    private int cuentaReversaId;
+    private String descripcionReversa;
+    private BigDecimal montoReversa;
+    
+    
     public void cargarCuentas() {
         try {
             cuentas = cuentaService.obtenerCuentasPorClienteId(clienteId);
@@ -185,12 +192,54 @@ public class CuentaController implements Serializable {
             mostrarMensaje(FacesMessage.SEVERITY_ERROR, "Error del sistema", "Error al realizar SINPE: " + e.getMessage());
         }
     }
+    
+    
+    public void solicitarReversa() {
+        try {
+            // Validaciones básicas
+            if (cuentaReversaId == 0) {
+                mostrarMensaje(FacesMessage.SEVERITY_WARN, "Advertencia", "Debe seleccionar una cuenta");
+                return;
+            }
 
+            if (descripcionReversa == null || descripcionReversa.trim().isEmpty()) {
+                mostrarMensaje(FacesMessage.SEVERITY_WARN, "Advertencia", "Debe ingresar la descripción del motivo");
+                return;
+            }
+
+            if (montoReversa == null || montoReversa.compareTo(BigDecimal.ZERO) <= 0) {
+                mostrarMensaje(FacesMessage.SEVERITY_WARN, "Advertencia", "El monto debe ser mayor a cero");
+                return;
+            }
+
+            // Crear solicitud de reversa
+            boolean exito = cuentaService.crearSolicitudReversa(clienteId, cuentaReversaId, descripcionReversa, montoReversa);
+
+            if (exito) {
+                mostrarMensaje(FacesMessage.SEVERITY_INFO, "Solicitud enviada", "Su solicitud de reversa ha sido enviada al administrador para revisión");
+                limpiarFormularioReversa();
+            } else {
+                mostrarMensaje(FacesMessage.SEVERITY_ERROR, "Error", "No se pudo enviar la solicitud de reversa");
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            mostrarMensaje(FacesMessage.SEVERITY_ERROR, "Error del sistema", "Error al solicitar reversa: " + e.getMessage());
+        }
+    }
+    
+    
     private void limpiarFormularioSinpe() {
         cuentaSinpeOrigenId = 0;
         numeroDestinoSinpe = null;
         montoSinpe = null;
         descripcionSinpe = null;
+    }
+    
+    private void limpiarFormularioReversa() {
+        cuentaReversaId = 0;
+        descripcionReversa = null;
+        montoReversa = null;
     }
 
     // Método de ayuda para mostrar los mensajes correspondientes
@@ -199,9 +248,6 @@ public class CuentaController implements Serializable {
                 .addMessage(null, new FacesMessage(severity, error, detallado));
     }
 
-    public BigDecimal getMontoDeposito() {return montoDeposito;}
-
-    public void setMontoDeposito(BigDecimal montoDeposito) {this.montoDeposito = montoDeposito;}
 
     public List<Cuenta> getCuentas() {
         if (cuentas == null) {
@@ -210,6 +256,22 @@ public class CuentaController implements Serializable {
         return cuentas;
     }
 
+    public int getCuentaReversaId() {return cuentaReversaId;}
+
+    public void setCuentaReversaId(int cuentaReversaId) {this.cuentaReversaId = cuentaReversaId;}
+
+    public String getDescripcionReversa() {return descripcionReversa;}
+
+    public void setDescripcionReversa(String descripcionReversa) {this.descripcionReversa = descripcionReversa;}
+
+    public BigDecimal getMontoReversa() {return montoReversa;}
+
+    public void setMontoReversa(BigDecimal montoReversa) {this.montoReversa = montoReversa;}
+    
+    public BigDecimal getMontoDeposito() {return montoDeposito;}
+
+    public void setMontoDeposito(BigDecimal montoDeposito) {this.montoDeposito = montoDeposito;}
+    
     public int getCuentaOrigenId() {return cuentaOrigenId;}
 
     public void setCuentaOrigenId(int cuentaOrigenId) {this.cuentaOrigenId = cuentaOrigenId;}

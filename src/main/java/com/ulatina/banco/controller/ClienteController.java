@@ -48,6 +48,11 @@ public class ClienteController implements Serializable{
                 return null;
             }
             
+            //admin
+            if (cliente.getNombre().equals("admin") && cliente.getCedula().equals("123")){
+                clienteService.redireccionar("/admin.xhtml");
+            }
+            
             // Cliente válido - redirigir a cuentas
             clienteService.redireccionar("/cuenta.xhtml");
             return null;

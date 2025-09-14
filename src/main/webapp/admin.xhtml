@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:f="jakarta.faces.core">
+
+    <h:head>
+        <title>Panel de Administración - Banco U Latina</title>
+        <style>
+            body {
+                font-family: Arial;
+                background-color: #f5f5f5;
+                padding: 20px;
+            }
+
+            .container {
+                max-width: 1200px;
+                margin: 0 auto;
+            }
+
+            .header {
+                text-align: center;
+                margin-bottom: 30px;
+                color: #333;
+            }
+
+            .reversa-card {
+                background: white;
+                border-radius: 10px;
+                padding: 20px;
+                margin-bottom: 20px;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                border-left: 5px solid #dc3545;
+            }
+
+            .reversa-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 15px;
+                border-bottom: 1px solid #eee;
+                padding-bottom: 10px;
+            }
+
+            .reversa-info {
+                margin-bottom: 10px;
+            }
+
+            .info-label {
+                font-weight: bold;
+                color: #666;
+                display: inline-block;
+                width: 120px;
+            }
+
+            .info-value {
+                color: #333;
+            }
+
+            .monto {
+                font-size: 18px;
+                font-weight: bold;
+                color: #dc3545;
+            }
+
+            .descripcion {
+                background-color: #f8f9fa;
+                padding: 10px;
+                border-radius: 5px;
+                margin: 10px 0;
+                font-style: italic;
+            }
+
+            .botones {
+                margin-top: 15px;
+            }
+
+            .btn-aprobar {
+                background: #28a745;
+                color: white;
+                border: none;
+                padding: 8px 16px;
+                border-radius: 5px;
+                font-size: 14px;
+                cursor: pointer;
+                margin-right: 10px;
+            }
+
+            .btn-aprobar:hover {
+                background: #218838;
+            }
+
+            .btn-rechazar {
+                background: #dc3545;
+                color: white;
+                border: none;
+                padding: 8px 16px;
+                border-radius: 5px;
+                font-size: 14px;
+                cursor: pointer;
+            }
+
+            .btn-rechazar:hover {
+                background: #c82333;
+            }
+
+            .sin-reversas {
+                text-align: center;
+                padding: 50px;
+                background: white;
+                border-radius: 10px;
+                color: #666;
+            }
+        </style>
+    </h:head>
+
+    <h:body>
+        <div class="container">
+            <div class="header">
+                <h1>Panel de Administración</h1>
+                <h2>Solicitudes de Reversa Pendientes</h2>
+            </div>
+
+            <h:form>
+                <h:messages id="msgs" globalOnly="true" showDetail="true" />
+
+                <h:panelGroup rendered="#{not empty adminController.reversasPendientes}">
+                    <ui:repeat value="#{adminController.reversasPendientes}" var="reversa">
+                        <div class="reversa-card">
+                            <div class="reversa-header">
+                                <h3>Solicitud de Reversa #{reversa.id}</h3>
+                                <h:outputLabel>PENDIENTE</h:outputLabel>
+                            </div>
+
+                            <div class="reversa-info">
+                                <span class="info-label">Cliente ID:</span>
+                                <span class="info-value">#{reversa.clienteId}</span>
+                            </div>
+
+                            <div class="reversa-info">
+                                <span class="info-label">Cuenta ID:</span>
+                                <span class="info-value">#{reversa.cuentaId}</span>
+                            </div>
+
+                            <div class="reversa-info">
+                                <span class="info-label">Monto:</span>
+                                <span class="monto">₡#{reversa.monto}</span>
+                            </div>
+
+                            <div class="descripcion">
+                                <strong>Descripción del motivo:</strong><br/>
+                                #{reversa.descripcion}
+                            </div>
+
+                            <div class="botones">
+                                <h:commandButton value="Aprobar" 
+                                                 styleClass="btn-aprobar"
+                                                 action="#{adminController.aprobarReversa(reversa.id)}">
+                                    <f:ajax execute="@form" render="@form"/>
+                                </h:commandButton>
+
+                                <h:commandButton value="Rechazar" 
+                                                 styleClass="btn-rechazar"
+                                                 action="#{adminController.rechazarReversa(reversa.id)}">
+                                    <f:ajax execute="@form" render="@form"/>
+                                </h:commandButton>
+                            </div>
+                        </div>
+                    </ui:repeat>
+                </h:panelGroup>
+
+                <h:panelGroup rendered="#{empty adminController.reversasPendientes}">
+                    <div class="sin-reversas">
+                        <h3>No hay solicitudes pendientes</h3>
+                        <p>No existen solicitudes de reversa pendientes de aprobación.</p>
+                    </div>
+                </h:panelGroup>
+            </h:form>
+        </div>
+    </h:body>
+</html>
