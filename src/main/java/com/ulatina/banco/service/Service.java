@@ -24,9 +24,9 @@ public abstract class Service {
 
     private String host = "localhost";
     private String puerto = "3306";
-    private String sid = "dbbanco";
+    private String sid = "bdbanco";
     private String usuario = "root";
-    private String clave = "adminadmin";
+    private String clave = "contrabasedatos";
 
     public void conectarBD() throws ClassNotFoundException, SQLException {
         // Paso 1: Cargar el driver JDBC (MySQL en este caso)

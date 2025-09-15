@@ -51,6 +51,10 @@ public class CuentaController implements Serializable {
     private String paisDestino;
     private BigDecimal montoSwift;
     
+    //Ahorros con intereses
+    private BigDecimal montoAhorro;
+    
+    
     public void cargarCuentas() {
         try {
             cuentas = cuentaService.obtenerCuentasPorClienteId(clienteId);
@@ -340,6 +344,52 @@ public class CuentaController implements Serializable {
         }
     }
   
+    public BigDecimal getInteresesGenerados() {
+        if (montoAhorro == null || montoAhorro.compareTo(BigDecimal.ZERO) <= 0) {
+            mostrarMensaje(FacesMessage.SEVERITY_WARN, "Advertencia", "El monto debe ser mayor a cero");
+            return BigDecimal.ZERO;
+        }
+
+        // 1.5% de interés mensual
+        BigDecimal tasaInteres = new BigDecimal("0.015");
+        
+        
+        //.setScale(2,roundhalf) -> basicamente es un redondea a dos decimales
+        return montoAhorro.multiply(tasaInteres).setScale(2, BigDecimal.ROUND_HALF_UP);
+    }
+
+    // Calcula el impuesto sobre los intereses (15%)
+    public BigDecimal getImpuestoRetenido() {
+        BigDecimal intereses = getInteresesGenerados();
+        if (intereses.compareTo(BigDecimal.ZERO) <= 0) {
+            return BigDecimal.ZERO;
+        }
+
+        // 15% de impuesto sobre intereses
+        BigDecimal tasaImpuesto = new BigDecimal("0.15");
+        //.setScale(2,roundhalf) -> basicamente es un redondea a dos decimales
+        return intereses.multiply(tasaImpuesto).setScale(2, BigDecimal.ROUND_HALF_UP);
+    }
+
+    // Calcula los intereses netos (intereses - impuestos)
+    public BigDecimal getInteresesNetos() {
+        BigDecimal intereses = getInteresesGenerados();
+        BigDecimal impuesto = getImpuestoRetenido();
+        //.substract lo utilizamos para restar los intereses el impuesto genero e igual redondeado a dos decimales para obtener el monto neto
+        return intereses.subtract(impuesto).setScale(2, BigDecimal.ROUND_HALF_UP);
+    }
+
+    // Calcula el monto final (monto inicial + intereses netos)
+    public BigDecimal getMontoFinal() {
+        if (montoAhorro == null || montoAhorro.compareTo(BigDecimal.ZERO) <= 0) {
+            return BigDecimal.ZERO;
+        }
+
+        BigDecimal interesesNetos = getInteresesNetos();
+        return montoAhorro.add(interesesNetos).setScale(2, BigDecimal.ROUND_HALF_UP);
+    }
+
+    
     private void limpiarFormularioSwift() {
         cuentaSwiftOrigenId = 0;
         codigoSwift = null;
@@ -375,6 +425,10 @@ public class CuentaController implements Serializable {
         return cuentas;
     }
 
+    public BigDecimal getMontoAhorro() {return montoAhorro;}
+
+    public void setMontoAhorro(BigDecimal montoAhorro) {this.montoAhorro = montoAhorro;}
+    
     public int getCuentaSwiftOrigenId() {return cuentaSwiftOrigenId;}
 
     public void setCuentaSwiftOrigenId(int cuentaSwiftOrigenId) {this.cuentaSwiftOrigenId = cuentaSwiftOrigenId;}
