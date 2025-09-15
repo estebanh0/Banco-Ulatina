@@ -7,6 +7,8 @@ package com.ulatina.banco.model;
 /**
  *
  * @author santiago
+ * @param anos - Plazo en años
+ * 
  */
 import java.math.BigDecimal;
 

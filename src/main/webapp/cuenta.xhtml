@@ -309,6 +309,32 @@
                 transform: translateY(-1px);
                 box-shadow: 0 4px 8px rgba(0,0,0,0.3);
             }
+            
+            .calculador-section {
+                margin-top: 40px;
+                background: white;
+                border-radius: 10px;
+                padding: 30px;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                border-left: 5px solid #17a2b8;
+            }
+
+            .calculador-title {
+                font-size: 20px;
+                font-weight: bold;
+                color: #17a2b8;
+                margin-bottom: 20px;
+            }
+            
+            .nota-calculadora {
+                text-align: center;
+                color: #666;
+                font-style: italic;
+                margin-top: 15px;
+                padding-top: 15px;
+                border-top: 1px solid #dee2e6;
+            }
+
         </style>
     </h:head>
 
@@ -566,6 +592,46 @@
                                      action="#{cuentaController.realizarTransferenciaInternacional()}">
                         <f:ajax execute="@form" render="@form"/>
                     </h:commandButton>
+                </div>
+                
+                <!-- Calculador de Intereses -->
+                <div class="calculador-section">
+                    <div class="calculador-title">Calculador de Intereses de Ahorro</div>
+
+                    <div class="form-group">
+                        <h:outputLabel for="montoAhorro" value="Monto a ahorrar:" styleClass="form-label" />
+                        <h:inputText id="montoAhorro" 
+                                     value="#{cuentaController.montoAhorro}" 
+                                     styleClass="form-input"
+                                     pt:placeholder="1000000">
+                            <f:convertNumber type="currency" currencySymbol=""/>
+                            <f:ajax event="keyup" render="resultadoIntereses" />
+                        </h:inputText>
+                    </div>
+
+                    <div id="resultadoIntereses">
+                        <h:panelGroup rendered="#{cuentaController.montoAhorro != null and cuentaController.montoAhorro > 0}">
+                            <p><strong>Intereses ganados (1.5%):</strong> 
+                                <h:outputText value="#{cuentaController.interesesGenerados}">
+                                    <f:convertNumber type="currency" currencySymbol="₡" />
+                                </h:outputText>
+                            </p>
+                            <p><strong>Impuesto (15%):</strong> 
+                                <h:outputText value="#{cuentaController.impuestoRetenido}">
+                                    <f:convertNumber type="currency" currencySymbol="₡" />
+                                </h:outputText>
+                            </p>
+                            <p><strong>Total final:</strong> 
+                                <h:outputText value="#{cuentaController.montoFinal}">
+                                    <f:convertNumber type="currency" currencySymbol="₡" />
+                                </h:outputText>
+                            </p>
+                        </h:panelGroup>
+                    </div>
+                    
+                    <div class="nota-calculadora">
+                        <small>* Cálculo basado en 1.5% de interés mensual y 15% de impuesto sobre intereses generados</small>
+                    </div>
                 </div>
                 
             </h:form>

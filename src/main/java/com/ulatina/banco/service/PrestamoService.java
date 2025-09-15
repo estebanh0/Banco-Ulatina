@@ -4,19 +4,18 @@
  */
 package com.ulatina.banco.service;
 
-/**
- *
- * @author santiago
- * Genera la tabla de amortización completa en memoria
- * @param anos - Plazo en años
- */
-
-
 import com.ulatina.banco.model.Prestamo;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
+
+/**
+ *
+ * @author santiago
+ * Genera la tabla de amortización completa en memoria
+ * 
+ */
 
 public class PrestamoService {
 

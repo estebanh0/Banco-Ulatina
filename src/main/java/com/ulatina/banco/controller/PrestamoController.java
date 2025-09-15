@@ -4,10 +4,6 @@
  */
 package com.ulatina.banco.controller;
 
-/**
- *
- * @author santi
- */
 import com.ulatina.banco.model.Prestamo;
 import com.ulatina.banco.service.PrestamoService;
 import jakarta.faces.application.FacesMessage;
@@ -23,6 +19,7 @@ import java.util.List;
  * Controlador simplificado para calculadora de préstamos
  * No maneja datos en base de datos, solo cálculos en memoria
  */
+
 @Named
 @ViewScoped
 public class PrestamoController implements Serializable {
