@@ -234,6 +234,35 @@ public class CuentaController implements Serializable {
         }
     }
     
+    public void incrementoSaldoDirecto(int id) {
+        try {
+            // Buscar la cuenta específica
+            for (Cuenta cuenta : cuentas) {
+                if (cuenta.getId()== id) {
+
+                    // Verificar que la cuenta esté activa
+                    if (cuenta.getEstado() != Cuenta.EstadoCuenta.ACTIVA) {
+                        mostrarMensaje(FacesMessage.SEVERITY_WARN,
+                                "Advertencia", "Solo se puede incrementar el saldo de cuentas activas");
+                        return;
+                    }
+
+                    // Obtener el saldo actual
+                    BigDecimal saldoActual = cuenta.getSaldo();
+
+                    // Incrementar 1000 al saldo actual
+                    BigDecimal nuevoSaldo = saldoActual.add(new BigDecimal("1000"));
+                    cuenta.setSaldo(nuevoSaldo);
+                    return;
+                }
+            }
+        } catch (Exception e) {
+            mostrarMensaje(FacesMessage.SEVERITY_ERROR,
+                    "Error del sistema", "Error al incrementar el saldo: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+    
     public void realizarTransferenciaInternacional() {
         try {
             // Validaciones básicas
@@ -310,8 +339,7 @@ public class CuentaController implements Serializable {
             mostrarMensaje(FacesMessage.SEVERITY_ERROR, "Error del sistema", "Error al realizar transferencia internacional: " + e.getMessage());
         }
     }
-    
-    
+  
     private void limpiarFormularioSwift() {
         cuentaSwiftOrigenId = 0;
         codigoSwift = null;
@@ -319,7 +347,7 @@ public class CuentaController implements Serializable {
         paisDestino = null;
         montoSwift = null;
     }
-    
+  
     private void limpiarFormularioSinpe() {
         cuentaSinpeOrigenId = 0;
         numeroDestinoSinpe = null;
