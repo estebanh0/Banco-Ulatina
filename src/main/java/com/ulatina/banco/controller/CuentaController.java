@@ -44,6 +44,13 @@ public class CuentaController implements Serializable {
     private BigDecimal montoReversa;
     
     
+    //TRANSFERENCIA INTERNACIONAL
+    private int cuentaSwiftOrigenId;
+    private String codigoSwift;
+    private String beneficiario;
+    private String paisDestino;
+    private BigDecimal montoSwift;
+    
     public void cargarCuentas() {
         try {
             cuentas = cuentaService.obtenerCuentasPorClienteId(clienteId);
@@ -193,7 +200,6 @@ public class CuentaController implements Serializable {
         }
     }
     
-    
     public void solicitarReversa() {
         try {
             // Validaciones básicas
@@ -257,6 +263,91 @@ public class CuentaController implements Serializable {
         }
     }
     
+    public void realizarTransferenciaInternacional() {
+        try {
+            // Validaciones básicas
+            if (cuentaSwiftOrigenId == 0) {
+                mostrarMensaje(FacesMessage.SEVERITY_WARN, "Advertencia", "Debe seleccionar una cuenta origen");
+                return;
+            }
+
+            if (codigoSwift == null || codigoSwift.trim().isEmpty()) {
+                mostrarMensaje(FacesMessage.SEVERITY_WARN, "Advertencia", "Debe ingresar el código SWIFT del banco destino");
+                return;
+            }
+
+            if (beneficiario == null || beneficiario.trim().isEmpty()) {
+                mostrarMensaje(FacesMessage.SEVERITY_WARN, "Advertencia", "Debe ingresar el nombre del beneficiario");
+                return;
+            }
+
+            if (paisDestino == null || paisDestino.trim().isEmpty()) {
+                mostrarMensaje(FacesMessage.SEVERITY_WARN, "Advertencia", "Debe ingresar el país destino");
+                return;
+            }
+
+            if (montoSwift == null || montoSwift.compareTo(BigDecimal.ZERO) <= 0) {
+                mostrarMensaje(FacesMessage.SEVERITY_WARN, "Advertencia", "El monto debe ser mayor a cero");
+                return;
+            }
+            
+            // Validar cuenta origen
+            Cuenta cuentaOrigen = cuentaService.buscarCuentaPorId(cuentaSwiftOrigenId);
+            
+            if (cuentaOrigen.getEstado() != Cuenta.EstadoCuenta.ACTIVA) {
+                mostrarMensaje(FacesMessage.SEVERITY_WARN, "Advertencia", "La cuenta debe estar activa para realizar transferencias");
+                return;
+            }
+            
+            // Solo permite USD
+            if (cuentaOrigen.getMoneda() == Cuenta.Moneda.CRC) {
+                mostrarMensaje(FacesMessage.SEVERITY_WARN, "Advertencia", "Las transferencias internacionales solo se permiten en USD");
+                return;
+            }
+
+            // Calcular tarifa (5% del monto como ejemplo)
+            BigDecimal tarifa = montoSwift.multiply(new BigDecimal("0.05"));
+            BigDecimal montoTotal = montoSwift.add(tarifa);
+            
+            if (cuentaOrigen.getSaldo().compareTo(montoTotal) < 0) {
+                mostrarMensaje(FacesMessage.SEVERITY_WARN, "Advertencia", "Fondos insuficientes (monto + tarifa: " + tarifa + ")");
+                return;
+            }
+
+            // Realizar transferencia internacional (rebaja con cuenta destino ficticia)
+            boolean exito = cuentaService.realizarTransferenciaInternacional(cuentaSwiftOrigenId, montoSwift, tarifa, codigoSwift, beneficiario, paisDestino);
+
+            if (exito) {
+                mostrarMensaje(FacesMessage.SEVERITY_INFO, "Transferencia internacional enviada",
+                        "Transferencia enviada exitosamente. "
+                        + "Beneficiario: " + beneficiario
+                        + ", País: " + paisDestino
+                        + ", SWIFT: " + codigoSwift
+                        + ", Monto: " + montoSwift
+                        + ", Tarifa: " + tarifa);
+
+                // Refrescar saldos y limpiar formulario
+                cargarCuentas();
+                limpiarFormularioSwift();
+
+            } else {
+                mostrarMensaje(FacesMessage.SEVERITY_ERROR, "Error", "No se pudo procesar la transferencia internacional");
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            mostrarMensaje(FacesMessage.SEVERITY_ERROR, "Error del sistema", "Error al realizar transferencia internacional: " + e.getMessage());
+        }
+    }
+  
+    private void limpiarFormularioSwift() {
+        cuentaSwiftOrigenId = 0;
+        codigoSwift = null;
+        beneficiario = null;
+        paisDestino = null;
+        montoSwift = null;
+    }
+  
     private void limpiarFormularioSinpe() {
         cuentaSinpeOrigenId = 0;
         numeroDestinoSinpe = null;
@@ -283,6 +374,26 @@ public class CuentaController implements Serializable {
         }
         return cuentas;
     }
+
+    public int getCuentaSwiftOrigenId() {return cuentaSwiftOrigenId;}
+
+    public void setCuentaSwiftOrigenId(int cuentaSwiftOrigenId) {this.cuentaSwiftOrigenId = cuentaSwiftOrigenId;}
+
+    public String getCodigoSwift() {return codigoSwift;}
+
+    public void setCodigoSwift(String codigoSwift) {this.codigoSwift = codigoSwift;}
+
+    public String getBeneficiario() {return beneficiario;}
+
+    public void setBeneficiario(String beneficiario) {this.beneficiario = beneficiario;}
+
+    public String getPaisDestino() {return paisDestino;}
+
+    public void setPaisDestino(String paisDestino) {this.paisDestino = paisDestino;}
+
+    public BigDecimal getMontoSwift() {return montoSwift;}
+
+    public void setMontoSwift(BigDecimal montoSwift) {this.montoSwift = montoSwift;}
 
     public int getCuentaReversaId() {return cuentaReversaId;}
 

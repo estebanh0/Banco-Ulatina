@@ -248,5 +248,46 @@ public class CuentaService extends Service {
             cerrarConexion();
         }
     }
+    
+    public boolean realizarTransferenciaInternacional(int cuentaOrigenId, BigDecimal monto, BigDecimal tarifa,
+                String codigoSwift, String beneficiario, String paisDestino)
+            throws SQLException, ClassNotFoundException {
+
+        PreparedStatement ps = null;
+
+        try {
+            conectarBD();
+
+            // Restar monto + tarifa de cuenta origen
+            BigDecimal montoTotal = monto.add(tarifa);
+            String sqlOrigen = "UPDATE cuenta SET saldo = saldo - ? WHERE id = ?";
+            ps = conexion.prepareStatement(sqlOrigen);
+            ps.setBigDecimal(1, montoTotal);
+            ps.setInt(2, cuentaOrigenId);
+            int resultado = ps.executeUpdate();
+            cerrarPreparedStatement(ps);
+
+            // Registrar la transferencia internacional para tracking
+            if (resultado > 0) {
+                String sqlRegistro = "INSERT INTO transferencia_internacional (cuenta_id, monto, tarifa, "
+                        + "codigo_swift, beneficiario, pais_destino, estado) VALUES (?, ?, ?, ?, ?, ?, 'ENVIADO')";
+                ps = conexion.prepareStatement(sqlRegistro);
+                ps.setInt(1, cuentaOrigenId);
+                ps.setBigDecimal(2, monto);
+                ps.setBigDecimal(3, tarifa);
+                ps.setString(4, codigoSwift);
+                ps.setString(5, beneficiario);
+                ps.setString(6, paisDestino);
+                ps.executeUpdate();
+            }
+
+            return resultado > 0;
+
+        } finally {
+            cerrarPreparedStatement(ps);
+            cerrarConexion();
+        }
+    }
+    
 
 }

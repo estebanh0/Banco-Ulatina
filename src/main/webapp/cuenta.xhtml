@@ -162,6 +162,22 @@
                 margin-bottom: 20px;
             }
 
+            .swift-section {
+                margin-top: 40px;
+                background: white;
+                border-radius: 10px;
+                padding: 30px;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                border-left: 5px solid #6f42c1;
+            }
+
+            .swift-title {
+                font-size: 20px;
+                font-weight: bold;
+                color: #6f42c1;
+                margin-bottom: 20px;
+            }
+            
             .form-group {
                 margin-bottom: 15px;
             }
@@ -238,6 +254,21 @@
             .btn-reversa:hover {
                 background: #c82333;
             }
+            
+            .btn-swift {
+                background: #6f42c1;
+                color: white;
+                border: none;
+                padding: 12px 20px;
+                border-radius: 5px;
+                font-size: 14px;
+                cursor: pointer;
+                margin-top: 10px;
+            }
+
+            .btn-swift:hover {
+                background: #5a32a3;
+            }
 
             .btn-incrementar {
                 background: #333;
@@ -263,6 +294,8 @@
             <h:form>
 
                 <h:messages id="msgs" globalOnly="true" showDetail="true" />
+                
+                <!-- Cuentas almacenadas en el usuario -->
 
                 <h:panelGroup rendered="#{not empty cuentaController.cuentas}">
                     <div class="cuentas-grid">
@@ -299,6 +332,8 @@
                         </ui:repeat>
                     </div>
                 </h:panelGroup>
+                
+                <!-- Sin cuentas en el usuario -->
 
                 <h:panelGroup rendered="#{empty cuentaController.cuentas}">
                     <div class="sin-cuentas">
@@ -307,8 +342,7 @@
                     </div>
                 </h:panelGroup>
 
-
-
+                <!-- Depositos -->
 
                 <div class="deposito-section">
                     <div class="deposito-title">Transferencia entre Cuentas</div>
@@ -350,7 +384,7 @@
                     </h:commandButton>
                 </div>
 
-
+                <!-- SINPE -->
 
                 <div class="sinpe-section">
                     <div class="sinpe-title">SINPE Móvil</div>
@@ -398,6 +432,8 @@
                     </h:commandButton>
                 </div>
 
+                <!-- Reversas -->
+                
                 <div class="reversa-section">
                     <div class="reversa-title">Solicitar Reversa</div>
 
@@ -432,6 +468,70 @@
                     <h:commandButton value="Solicitar Reversa" 
                                      styleClass="btn-reversa"
                                      action="#{cuentaController.solicitarReversa()}">
+                        <f:ajax execute="@form" render="@form"/>
+                    </h:commandButton>
+                </div>
+                
+                <!-- Transferencias SWIFT -->
+                
+                <div class="swift-section">
+                    <div class="swift-title">Transferencia Internacional (SWIFT)</div>
+
+                    <div class="form-group">
+                        <h:outputLabel for="cuentaSwiftOrigen" value="Cuenta origen:" styleClass="form-label" />
+                        <h:selectOneMenu id="cuentaSwiftOrigen" value="#{cuentaController.cuentaSwiftOrigenId}" styleClass="form-select">
+                            <f:selectItem itemValue="0" itemLabel="-- Seleccione cuenta origen --" />
+                            <f:selectItems value="#{cuentaController.cuentas}" var="cuenta" 
+                                           itemValue="#{cuenta.id}" 
+                                           itemLabel="#{cuenta.numeroMostrar} - #{cuenta.saldoFormateado} (#{cuenta.moneda})" />
+                        </h:selectOneMenu>
+                    </div>
+
+                    <p style="color: #6f42c1; font-size: 12px; margin-top: 10px;">
+                        * Solo son válidas cuentas en dólares
+                    </p>
+                    
+                    <div class="form-group">
+                        <h:outputLabel for="beneficiario" value="Beneficiario:" styleClass="form-label" />
+                        <h:inputText id="beneficiario" 
+                                     value="#{cuentaController.beneficiario}" 
+                                     styleClass="form-input"
+                                     pt:placeholder="Nombre del beneficiario" />
+                    </div>                                        
+
+                    <div class="form-group">
+                        <h:outputLabel for="paisDestino" value="País destino:" styleClass="form-label" />
+                        <h:inputText id="paisDestino" 
+                                     value="#{cuentaController.paisDestino}" 
+                                     styleClass="form-input"
+                                     pt:placeholder="País del beneficiario" />
+                    </div>
+
+                    <div class="form-group">
+                        <h:outputLabel for="codigoSwift" value="Código SWIFT:" styleClass="form-label" />
+                        <h:inputText id="codigoSwift" 
+                                     value="#{cuentaController.codigoSwift}" 
+                                     styleClass="form-input"
+                                     pt:placeholder="Ej: BULACRXX" />
+                    </div>
+
+                    <div class="form-group">
+                        <h:outputLabel for="montoSwift" value="Monto:" styleClass="form-label" />
+                        <h:inputText id="montoSwift" 
+                                     value="#{cuentaController.montoSwift}" 
+                                     styleClass="form-input"
+                                     pt:placeholder="0.00">
+                            <f:convertNumber type="currency" currencySymbol=""/>
+                        </h:inputText>
+                    </div>
+
+                    <p style="color: #6f42c1; font-size: 12px; margin-top: 10px;">
+                        * Se aplicará una tarifa del 5% sobre el monto de la transferencia
+                    </p>
+
+                    <h:commandButton value="Enviar Transferencia Internacional" 
+                                     styleClass="btn-swift"
+                                     action="#{cuentaController.realizarTransferenciaInternacional()}">
                         <f:ajax execute="@form" render="@form"/>
                     </h:commandButton>
                 </div>
