@@ -9,40 +9,125 @@
             body {
                 text-align: center;
                 margin-top: 100px;
+                background-color: #f5f5f5;
+                font-family: Arial;
             }
+            .container{
+                max-width: 600px;
+                margin: 0 auto;
+            }
+            .header{
+                text-align: center;
+                margin-bottom: 30px;
+                color: #333;
+            }
+            .validar-section{
+                margin-top: 40px;
+                background: white;
+                border-radius: 10px;
+                padding: 30px;
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            }
+            .btn-validar{
+                background: #28a745;
+                color: white;
+                border: none;
+                padding: 12px 100px;
+                border-radius: 5px;
+                font-size: 14px;
+                cursor: pointer;
+                margin-top: 10px;
+                align-items: center;
+            }
+            
+            .btn-container {
+                text-align: center;
+                margin-top: 10px;
+            }
+            
+            .form-container {
+                text-align: left;
+                max-width: 500px;
+                margin: 0 auto;
+            }
+            
+            .form-group {
+                margin-bottom: 25px;
+            }
+
+            .form-label {
+                display: block;
+                font-weight: bold;
+                margin-bottom: 5px;
+                color: #333;
+            }
+
+            .form-input {
+                width: 200%;
+                padding: 10px;
+                border: 1px solid #ddd;
+                border-radius: 5px;
+                font-size: 14px;
+                max-width: 300px;
+            }
+            .form-input:focus {
+                border-color: #28a745;
+                box-shadow: 0 0 0 3px rgba(40, 167, 69, 0.1);
+                outline: none;
+            }
+            
         </style>
     </h:head>
 
 
     <h:body>
+        <div class="container">        
+            <div class="validar-section">
+                <div class="header">
+                    <h1>Validación de Cliente</h1>
+                </div>   
+                <div class="form-container">
+                    <div class="form-group">
 
-        <h1>Validación de Cliente</h1>
+                        <h:form>
+                            <h:messages id="msgs" globalOnly="true" showDetail="true" />
 
-        <h:form style="display:inline-block; text-align:center;">
-            <h:messages id="msgs" globalOnly="true" showDetail="true" />
+                            <h:panelGrid columns="1" columnClasses="lbl,inp" cellpadding="6">
+                                <h:outputLabel for="cedula" 
+                                               value="Cédula" 
+                                               styleClass="form-label"/>
+                                <h:inputText id="cedula"
+                                             value="#{clienteController.cedula}"
+                                             required="true"
+                                             requiredMessage="La cédula es obligatoria"
+                                             pt:placeholder="Solo números" 
+                                             styleClass="form-input"/>
+                                <h:message for="cedula" />
+                                <h:outputText value="" />
 
-            <h:panelGrid columns="2" columnClasses="lbl,inp" cellpadding="6">
-                <h:outputLabel for="cedula" value="Cédula:" />
-                <h:inputText id="cedula"
-                             value="#{clienteController.cedula}"
-                             required="true"
-                             requiredMessage="La cédula es obligatoria"
-                             pt:placeholder="Solo números" />
-                <h:message for="cedula" />
-                <h:outputText value="" />
+                                <h:outputLabel for="nombre" 
+                                               value="Nombre completo" 
+                                               styleClass="form-label"/>
+                                <h:inputText id="nombre"
+                                             value="#{clienteController.nombre}"
+                                             required="true"
+                                             requiredMessage="El nombre es obligatorio"
+                                             pt:placeholder="Nombre y apellido" 
+                                             styleClass="form-input"/>
+                                <h:message for="nombre" />
+                                <h:outputText value="" />
+                            </h:panelGrid>
 
-                <h:outputLabel for="nombre" value="Nombre completo:" />
-                <h:inputText id="nombre"
-                             value="#{clienteController.nombre}"
-                             required="true"
-                             requiredMessage="El nombre es obligatorio"
-                             pt:placeholder="Nombre y apellido" />
-                <h:message for="nombre" />
-                <h:outputText value="" />
-            </h:panelGrid>
-
-            <br/>
-            <h:commandButton value="Validar" action="#{clienteController.validar}" />
-        </h:form>
+                            <div class="btn-container">
+                                <h:commandButton 
+                                    value="Validar" 
+                                    action="#{clienteController.validar}" 
+                                    styleClass="btn-validar"/>   
+                            </div>
+                        </h:form>
+                    </div>
+                </div>
+            </div>
+        </div>
     </h:body>
 </html>
