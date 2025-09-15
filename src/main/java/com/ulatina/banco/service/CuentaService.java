@@ -4,6 +4,7 @@
  */
 package com.ulatina.banco.service;
 
+import com.ulatina.banco.controller.SugefController;
 import com.ulatina.banco.model.Cuenta;
 import com.ulatina.banco.model.Cuenta.Moneda;
 import com.ulatina.banco.model.Cuenta.EstadoCuenta;
@@ -22,10 +23,13 @@ import java.util.List;
  *
  * - Consultas SQL con sus excepsiones
  *
- * - Obtenemos todas las cuentas que tenga el cliente mediante su id - "BuscarCuentaPorId" es un método que de momento no se utilizará pero para versiones posteriores si - Metodos correspondientes para transferencias tanto sinpe como entre cuentas bancarias - Funcionalidad de reversas
+ * - Obtenemos todas las cuentas que tenga el cliente mediante su id 
+ * - "BuscarCuentaPorId" es un método que de momento no se utilizará pero para versiones posteriores si 
+ * - Metodos correspondientes para transferencias tanto sinpe como entre cuentas bancarias 
+ * - Funcionalidad de reversas
  */
 public class CuentaService extends Service {
-
+    
     public List<Cuenta> obtenerCuentasPorClienteId(int clienteId) 
             throws SQLException, ClassNotFoundException {
 

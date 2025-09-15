@@ -97,28 +97,21 @@ public class Cuenta {
     // GETTERS / SETTERS
     
     public int getId() {return id;}
-
     public void setId(int id) {this.id = id;}
 
     public String getNumeroCuenta() {return numeroCuenta;}
-
     public void setNumeroCuenta(String numeroCuenta) {this.numeroCuenta = numeroCuenta;}
 
     public int getClienteId() {return clienteId;}
-
     public void setClienteId(int clienteId) {this.clienteId = clienteId;}
 
     public Moneda getMoneda() {return moneda;}
-
     public void setMoneda(Moneda moneda) {this.moneda = moneda;}
 
     public BigDecimal getSaldo() {return saldo;}
-
     public void setSaldo(BigDecimal saldo) {this.saldo = saldo;}
 
     public EstadoCuenta getEstado() {return estado;}
-
     public void setEstado(EstadoCuenta estado) {this.estado = estado;}
-
 
 }

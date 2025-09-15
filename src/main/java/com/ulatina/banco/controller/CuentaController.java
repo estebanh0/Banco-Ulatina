@@ -18,11 +18,15 @@ import java.util.List;
  *
  * @author esteban
  * @since 12/9/25
+ * 
+ * - Implementación de monitoreo de montos mayores o iguales a 10.000.000
  *
  */
 @Named
 @ViewScoped
 public class CuentaController implements Serializable {
+    
+    private SugefController sugefController = new SugefController();
 
     //Cuentas
     private List<Cuenta> cuentas;
@@ -114,6 +118,10 @@ public class CuentaController implements Serializable {
             boolean exito = cuentaService.realizarTransferencia(cuentaOrigenId, cuentaDepositoId, montoDeposito);
 
             if (exito) {
+                
+                //Monitorear el limite de la transaccion para reportes de SUGEF
+                sugefController.monitorearTransaccion(clienteId, cuentaOrigenId, "TRANSFERENCIA_INTERNA", montoDeposito);
+                
                 mostrarMensaje(FacesMessage.SEVERITY_INFO,
                         "Depósito exitoso", "Se depositaron " + montoDeposito + " con éxito");
 
@@ -188,6 +196,9 @@ public class CuentaController implements Serializable {
                         + " Numero destino: "+ numeroDestinoSinpe
                         + " Monto: " + montoSinpe
                         + " Descripción: " + descripcionSinpe);
+                
+                //Monitoreo de transferencia - SUGEF
+                sugefController.monitorearTransaccion(clienteId, cuentaSinpeOrigenId, "SINPE", montoSinpe);
 
                 // Refrescar saldos y limpiar formulario
                 cargarCuentas();
@@ -322,6 +333,9 @@ public class CuentaController implements Serializable {
             boolean exito = cuentaService.realizarTransferenciaInternacional(cuentaSwiftOrigenId, montoSwift, tarifa, codigoSwift, beneficiario, paisDestino);
 
             if (exito) {
+                
+                sugefController.monitorearTransaccion(clienteId, cuentaSwiftOrigenId, "TRANSFERENCIA_INTERNACIONAL", montoSwift);
+                
                 mostrarMensaje(FacesMessage.SEVERITY_INFO, "Transferencia internacional enviada",
                         "Transferencia enviada exitosamente. "
                         + "Beneficiario: " + beneficiario
@@ -426,73 +440,56 @@ public class CuentaController implements Serializable {
     }
 
     public BigDecimal getMontoAhorro() {return montoAhorro;}
-
     public void setMontoAhorro(BigDecimal montoAhorro) {this.montoAhorro = montoAhorro;}
     
     public int getCuentaSwiftOrigenId() {return cuentaSwiftOrigenId;}
-
     public void setCuentaSwiftOrigenId(int cuentaSwiftOrigenId) {this.cuentaSwiftOrigenId = cuentaSwiftOrigenId;}
 
     public String getCodigoSwift() {return codigoSwift;}
-
     public void setCodigoSwift(String codigoSwift) {this.codigoSwift = codigoSwift;}
 
     public String getBeneficiario() {return beneficiario;}
-
     public void setBeneficiario(String beneficiario) {this.beneficiario = beneficiario;}
 
     public String getPaisDestino() {return paisDestino;}
-
     public void setPaisDestino(String paisDestino) {this.paisDestino = paisDestino;}
 
     public BigDecimal getMontoSwift() {return montoSwift;}
-
     public void setMontoSwift(BigDecimal montoSwift) {this.montoSwift = montoSwift;}
 
     public int getCuentaReversaId() {return cuentaReversaId;}
-
     public void setCuentaReversaId(int cuentaReversaId) {this.cuentaReversaId = cuentaReversaId;}
 
     public String getDescripcionReversa() {return descripcionReversa;}
-
     public void setDescripcionReversa(String descripcionReversa) {this.descripcionReversa = descripcionReversa;}
 
     public BigDecimal getMontoReversa() {return montoReversa;}
-
     public void setMontoReversa(BigDecimal montoReversa) {this.montoReversa = montoReversa;}
     
     public BigDecimal getMontoDeposito() {return montoDeposito;}
-
     public void setMontoDeposito(BigDecimal montoDeposito) {this.montoDeposito = montoDeposito;}
     
     public int getCuentaOrigenId() {return cuentaOrigenId;}
-
     public void setCuentaOrigenId(int cuentaOrigenId) {this.cuentaOrigenId = cuentaOrigenId;}
 
     public int getCuentaDepositoId() {return cuentaDepositoId;}
-
     public void setCuentaDepositoId(int cuentaDepositoId) {this.cuentaDepositoId = cuentaDepositoId;}
     
     public void setCuentas(List<Cuenta> cuentas) {this.cuentas = cuentas;}
 
     public int getClienteId() {return clienteId;}
-
     public void setClienteId(int clienteId) {this.clienteId = clienteId;}
 
     public int getCuentaSinpeOrigenId() {return cuentaSinpeOrigenId;}
-
     public void setCuentaSinpeOrigenId(int cuentaSinpeOrigenId) {this.cuentaSinpeOrigenId = cuentaSinpeOrigenId;}
 
     public String getNumeroDestinoSinpe() {return numeroDestinoSinpe;}
-
     public void setNumeroDestinoSinpe(String numeroDestinoSinpe) {this.numeroDestinoSinpe = numeroDestinoSinpe;}
 
     public BigDecimal getMontoSinpe() {return montoSinpe;}
-
     public void setMontoSinpe(BigDecimal montoSinpe) {this.montoSinpe = montoSinpe;}
 
     public String getDescripcionSinpe() {return descripcionSinpe;}
-
     public void setDescripcionSinpe(String descripcionSinpe) {this.descripcionSinpe = descripcionSinpe;}
 
 }
