@@ -251,6 +251,33 @@
                 min-width: 100px;
                 letter-spacing: 1px;
             }
+            
+            .nav-buttons {
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                z-index: 1000;
+            }
+
+            .btn-prestamos {
+                background: #17a2b8;
+                color: white;
+                border: none;
+                padding: 12px 20px;
+                border-radius: 5px;
+                font-size: 14px;
+                font-weight: bold;
+                cursor: pointer;
+                text-decoration: none;
+                display: inline-block;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            }
+
+            .btn-prestamos:hover {
+                background: #138496;
+                transform: translateY(-1px);
+                box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            }
         </style>
     </h:head>
 
@@ -258,6 +285,11 @@
         <div class="container">
             <div class="header">
                 <h1>Mis Cuentas</h1>               
+            </div>
+            <div class="nav-buttons">
+                <h:link outcome="prestamo" styleClass="btn-prestamos">
+                    Calcular Préstamos
+                </h:link>
             </div>
 
             <h:form>
