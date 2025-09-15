@@ -228,6 +228,34 @@ public class CuentaController implements Serializable {
         }
     }
     
+    public void incrementoSaldoDirecto(int id) {
+        try {
+            // Buscar la cuenta específica
+            for (Cuenta cuenta : cuentas) {
+                if (cuenta.getId()== id) {
+
+                    // Verificar que la cuenta esté activa
+                    if (cuenta.getEstado() != Cuenta.EstadoCuenta.ACTIVA) {
+                        mostrarMensaje(FacesMessage.SEVERITY_WARN,
+                                "Advertencia", "Solo se puede incrementar el saldo de cuentas activas");
+                        return;
+                    }
+
+                    // Obtener el saldo actual
+                    BigDecimal saldoActual = cuenta.getSaldo();
+
+                    // Incrementar 1000 al saldo actual
+                    BigDecimal nuevoSaldo = saldoActual.add(new BigDecimal("1000"));
+                    cuenta.setSaldo(nuevoSaldo);
+                    return;
+                }
+            }
+        } catch (Exception e) {
+            mostrarMensaje(FacesMessage.SEVERITY_ERROR,
+                    "Error del sistema", "Error al incrementar el saldo: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
     
     private void limpiarFormularioSinpe() {
         cuentaSinpeOrigenId = 0;

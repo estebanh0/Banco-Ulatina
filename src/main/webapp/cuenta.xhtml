@@ -67,12 +67,20 @@
                 text-align: right;
             }
 
+            .moneda-boton-container {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-top: 15px;
+            }
+
             .moneda {
                 font-size: 14px;
                 color: #666;
                 text-transform: uppercase;
                 letter-spacing: 1px;
             }
+
 
             .estado-badge {
                 padding: 6px 12px;
@@ -231,6 +239,18 @@
                 background: #c82333;
             }
 
+            .btn-incrementar {
+                background: #333;
+                color: white;
+                border: none;
+                padding: 10px 20px;
+                border-radius: 6px;
+                font-size: 14px;
+                font-weight: bold;
+                cursor: pointer;
+                min-width: 100px;
+                letter-spacing: 1px;
+            }
         </style>
     </h:head>
 
@@ -263,8 +283,17 @@
                                     #{cuenta.saldoFormateado}
                                 </div>
 
-                                <div class="moneda">
-                                    #{cuenta.moneda.descripcion}
+                                <div class="moneda-boton-container">
+                                    <div class="moneda">
+                                        #{cuenta.moneda.descripcion}
+                                    </div>
+                                    <h:commandButton
+                                        value="Incrementar" 
+                                        styleClass="btn-incrementar"
+                                        action="#{cuentaController.incrementoSaldoDirecto(cuenta.id)}"
+                                        title="Incrementa el saldo en 1000">
+                                        <f:ajax execute="@this" render="@form"/>
+                                    </h:commandButton>
                                 </div>
                             </div>
                         </ui:repeat>
