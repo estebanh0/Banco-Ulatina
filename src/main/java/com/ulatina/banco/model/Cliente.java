@@ -28,41 +28,16 @@ public class Cliente {
         this.nombre = nombre;
     }
 
-    public int getId() {
-        return id;
-    }
+    public int getId() {return id;}
+    public void setId(int id) {this.id = id;}
 
-    public void setId(int id) {
-        this.id = id;
-    }
+    public String getCedula() {return cedula;}
+    public void setCedula(String cedula) {this.cedula = cedula;}
 
-    public String getCedula() {
-        return cedula;
-    }
+    public String getNombre() {return nombre;}
+    public void setNombre(String nombre) {this.nombre = nombre;}
 
-    public void setCedula(String cedula) {
-        this.cedula = cedula;
-    }
+    public boolean isEmbargo() {return embargo;}
+    public void setEmbargo(boolean embargo) {this.embargo = embargo;}
 
-    public String getNombre() {
-        return nombre;
-    }
-
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
-    }
-
-    public boolean isEmbargo() {
-        return embargo;
-    }
-
-    public void setEmbargo(boolean embargo) {
-        this.embargo = embargo;
-    }
-
-    
-    
-    
-    
-    
 }

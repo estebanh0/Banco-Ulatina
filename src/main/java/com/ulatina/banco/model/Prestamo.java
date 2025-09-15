@@ -47,22 +47,17 @@ public class Prestamo {
     }
 
     public int getPeriodo() { return periodo; }
-
     public void setPeriodo(int periodo) { this.periodo = periodo; }
 
     public BigDecimal getInteres() { return interes; }
-
     public void setInteres(BigDecimal interes) { this.interes = interes; }
 
     public BigDecimal getAmortizacionCapital() { return amortizacionCapital; }
-
     public void setAmortizacionCapital(BigDecimal amortizacionCapital) { this.amortizacionCapital = amortizacionCapital; }
 
     public BigDecimal getCuota() { return cuota; }
-
     public void setCuota(BigDecimal cuota) { this.cuota = cuota; }
 
     public BigDecimal getCapitalPendiente() { return capitalPendiente; }
-
     public void setCapitalPendiente(BigDecimal capitalPendiente) { this.capitalPendiente = capitalPendiente; }
 }

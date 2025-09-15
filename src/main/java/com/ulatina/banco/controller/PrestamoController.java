@@ -91,19 +91,15 @@ public class PrestamoController implements Serializable {
     }
     
  
-    public BigDecimal getMonto() { return monto; }
-    
+    public BigDecimal getMonto() { return monto; }    
     public void setMonto(BigDecimal monto) { this.monto = monto; }
     
-    public int getAnos() { return anos; }
-    
+    public int getAnos() { return anos; }   
     public void setAnos(int anos) { this.anos = anos; }
     
-    public BigDecimal getTasaAnual() { return tasaAnual; }
-    
+    public BigDecimal getTasaAnual() { return tasaAnual; }   
     public void setTasaAnual(BigDecimal tasaAnual) { this.tasaAnual = tasaAnual; }
     
-    public List<Prestamo> getTablaAmortizacion() { return tablaAmortizacion; }
-    
+    public List<Prestamo> getTablaAmortizacion() { return tablaAmortizacion; }  
     public void setTablaAmortizacion(List<Prestamo> tablaAmortizacion) { this.tablaAmortizacion = tablaAmortizacion; }
 }

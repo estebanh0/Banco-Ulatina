@@ -78,27 +78,13 @@ public class ClienteController implements Serializable{
     }
     
 
-    public String getCedula() {
-        return cedula;
-    }
+    public String getCedula() {return cedula;}
+    public void setCedula(String cedula) {this.cedula = cedula;}
     
-    public void setCedula(String cedula) {
-        this.cedula = cedula;
-    }
+    public String getNombre() {return nombre;}
+    public void setNombre(String nombre) {this.nombre = nombre;}
     
-    public String getNombre() {
-        return nombre;
-    }
+    public ClienteService getClienteService() {return clienteService;}
+    public void setClienteService(ClienteService clienteService) {this.clienteService = clienteService;}
     
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
-    }
-    
-    public ClienteService getClienteService() {
-        return clienteService;
-    }
-    
-    public void setClienteService(ClienteService clienteService) {
-        this.clienteService = clienteService;
-    }
 }

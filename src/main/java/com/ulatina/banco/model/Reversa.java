@@ -31,27 +31,21 @@ public class Reversa {
     }
 
     public String getEstado() {return estado;}
-
     public void setEstado(String estado) {this.estado = estado;}
 
     public int getId() {return id;}
-
     public void setId(int id) {this.id = id;}
 
     public int getClienteId() {return clienteId;}
-
     public void setClienteId(int clienteId) {this.clienteId = clienteId;}
 
     public int getCuentaId() {return cuentaId;}
-
     public void setCuentaId(int cuentaId) {this.cuentaId = cuentaId;}
 
     public String getDescripcion() {return descripcion;}
-
     public void setDescripcion(String descripcion) {this.descripcion = descripcion;}
 
     public BigDecimal getMonto() {return monto;}
-
     public void setMonto(BigDecimal monto) {this.monto = monto;}
     
     
