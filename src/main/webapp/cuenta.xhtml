@@ -239,6 +239,35 @@
             .btn-deposito:hover {
                 background: #0056b3;
             }
+            
+            .btn-confirmar {
+                background: #28a745;
+                color: white;
+                border: none;
+                padding: 12px 20px;
+                border-radius: 5px;
+                font-size: 14px;
+                cursor: pointer;
+                margin-top: 10px;
+            }
+
+            .btn-rechazar {
+                background: #c82333;
+                color: white;
+                border: none;
+                padding: 12px 20px;
+                border-radius: 5px;
+                font-size: 14px;
+                cursor: pointer;
+                margin-top: 10px;
+            }
+            
+            .botones-transferencia {
+                display: flex;
+                gap: 15px;
+                align-items: center;
+                margin-top: 10px;
+            }
 
             .btn-reversa {
                 background: #dc3545;
@@ -334,11 +363,48 @@
                 padding-top: 15px;
                 border-top: 1px solid #dee2e6;
             }
+             
+            .btn-limite-small {
+                background: #ffc107;
+                color: #333;
+                border: none;
+                padding: 8px 15px;
+                border-radius: 5px;
+                font-size: 12px;
+                font-weight: bold;
+                cursor: pointer;
+            }
 
+            .btn-limite-small:hover {
+                background: #e0a800;
+            }
+            
+            .limite-button {
+                position: fixed;
+                top: 20px;
+                left: 20px;
+                z-index: 1000;
+                display: flex;
+                align-items: center;
+                gap: 15px;
+                background: white;
+                padding: 15px;
+                border-radius: 8px;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            }
+
+            .limite-input {
+                padding: 8px 12px;
+                border: 1px solid #ddd;
+                border-radius: 5px;
+                font-size: 14px;
+                width: 120px;
+            }
+            
         </style>
     </h:head>
 
-    <h:body>
+    <h:body>  
         <div class="container">
             <div class="header">
                 <h1>Mis Cuentas</h1>               
@@ -352,6 +418,21 @@
             <h:form>
 
                 <h:messages id="msgs" globalOnly="true" showDetail="true" />
+                
+                <div class="limite-button">
+                    <span style="font-size: 13px; color: #666;">Límite transferencias</span>
+                    <h:inputText id="limiteTransferencia" 
+                                 value="#{cuentaController.limiteTransferencia}" 
+                                 styleClass="limite-input"
+                                 pt:placeholder="250000">
+                        <f:convertNumber type="currency" currencySymbol=""/>
+                    </h:inputText>
+                    <h:commandButton value="Aplicar" 
+                                     styleClass="btn-limite-small"
+                                     action="#{cuentaController.aplicarLimite()}">
+                        <f:ajax execute="limiteTransferencia" render="@form"/>
+                    </h:commandButton>
+                </div>
                 
                 <!-- Cuentas almacenadas en el usuario -->
 
@@ -435,11 +516,36 @@
                         </h:inputText>
                     </div>
 
-                    <h:commandButton value="Realizar Transferencia" 
-                                     styleClass="btn-deposito"
-                                     action="#{cuentaController.realizarDeposito()}">
-                        <f:ajax execute="@form" render="@form"/>
-                    </h:commandButton>
+                     <!-- Botones de transferencia normal sin exceder el limite -->
+                    <div class="botones-transferencia">
+                        <h:panelGroup rendered="#{not cuentaController.mostrarConfirmacionTransferencia}">
+                            <h:commandButton value="Realizar Transferencia" 
+                                             styleClass="btn-deposito"
+                                             action="#{cuentaController.realizarDeposito()}">
+                                <f:ajax execute="@form" render="@form"/>
+                            </h:commandButton>
+                        </h:panelGroup>
+                    </div>
+
+                    <!-- Panel de confirmación por superar limite -->
+                    <h:panelGroup rendered="#{cuentaController.mostrarConfirmacionTransferencia}">
+
+                        <h3>Confirmación de Transferencia</h3>
+                        <div> #{cuentaController.mensajeConfirmacion} </div>
+                        
+                        <div class="botones-transferencia">
+                            <h:commandButton value="Confirmar Transferencia" 
+                                             styleClass="btn-confirmar"
+                                             action="#{cuentaController.confirmarTransferencia()}">
+                                <f:ajax execute="@form" render="@form"/>
+                            </h:commandButton>
+                            <h:commandButton value="Cancelar" 
+                                             styleClass="btn-rechazar"
+                                             action="#{cuentaController.rechazarTransferencia()}">
+                                <f:ajax execute="@form" render="@form"/>
+                            </h:commandButton>
+                        </div>
+                    </h:panelGroup>
                 </div>
 
                 <!-- SINPE -->

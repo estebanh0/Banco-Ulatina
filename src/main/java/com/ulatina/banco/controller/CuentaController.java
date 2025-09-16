@@ -31,7 +31,12 @@ public class CuentaController implements Serializable {
     private BigDecimal montoDeposito;
     private int cuentaOrigenId;
     private int cuentaDepositoId;
-
+    
+    // NUEVO: Variables para límite de transferencia
+    private BigDecimal limiteTransferencia = new BigDecimal("250000"); // Límite por defecto ₡250,000
+    private boolean mostrarConfirmacionTransferencia = false;
+    private String mensajeConfirmacion = "";
+    
     //SINPE
     private int cuentaSinpeOrigenId;
     private String numeroDestinoSinpe;
@@ -109,7 +114,17 @@ public class CuentaController implements Serializable {
                         "Advertencia", "Sobrepasa sus fondos actuales");
                 return;
             }
-
+            
+            if (montoDeposito.compareTo(limiteTransferencia) > 0) {
+                
+                mensajeConfirmacion = String.format(
+                        "El monto de la transferencia supera el límite establecido "
+                      + "(₡%,.2f). ¿Desea continuar con la operación?", limiteTransferencia
+                );
+                mostrarConfirmacionTransferencia = true;
+                return;
+            }
+            
             // Realizar el depósito
             boolean exito = cuentaService.realizarTransferencia(cuentaOrigenId, cuentaDepositoId, montoDeposito);
 
@@ -132,7 +147,33 @@ public class CuentaController implements Serializable {
                     "Error del sistema", "Error al realizar el depósito: " + e.getMessage());
         }
     }
+    
+    // Método para confirmar transferencia que supera el límite
+    public void confirmarTransferencia() {
+        try {
+            boolean exito = cuentaService.realizarTransferencia(cuentaOrigenId, cuentaDepositoId, montoDeposito);
 
+            if (exito) {
+                String mensaje = String.format("Se transfirieron ₡%,.2f con éxito", montoDeposito);
+                mostrarMensaje(FacesMessage.SEVERITY_INFO, "Transferencia exitosa", mensaje);
+                cargarCuentas();
+                montoDeposito = null;
+            } else {
+                mostrarMensaje(FacesMessage.SEVERITY_ERROR, "Error", "No se pudo realizar la transferencia");
+            }
+            
+            limpiarConfirmacion();
+        } catch (Exception e) {
+            e.printStackTrace();
+            mostrarMensaje(FacesMessage.SEVERITY_ERROR, "Error del sistema", "Error al confirmar la transferencia: " + e.getMessage());
+        }
+    }
+    
+    public void rechazarTransferencia() {
+        mostrarMensaje(FacesMessage.SEVERITY_INFO, "Transferencia cancelada", "La operación ha sido cancelada por el usuario");
+        limpiarConfirmacion();
+    }
+    
     public void realizarSinpe() {
         try {
 
@@ -388,8 +429,35 @@ public class CuentaController implements Serializable {
         BigDecimal interesesNetos = getInteresesNetos();
         return montoAhorro.add(interesesNetos).setScale(2, BigDecimal.ROUND_HALF_UP);
     }
-
     
+    public void aplicarLimite() {
+        try {
+            if (limiteTransferencia == null || limiteTransferencia.compareTo(BigDecimal.ZERO) <= 0) {
+                mostrarMensaje(FacesMessage.SEVERITY_WARN,
+                        "Límite inválido", "El límite debe ser mayor a cero");
+                limiteTransferencia = new BigDecimal("250000"); // Resetear al valor por defecto
+                return;
+            }
+
+            if (limiteTransferencia.compareTo(new BigDecimal("15000000")) > 0) {
+                mostrarMensaje(FacesMessage.SEVERITY_WARN,
+                        "Límite muy alto", "El límite no puede ser mayor a ₡15,000,000");
+                limiteTransferencia = new BigDecimal("15000000"); // Limitar al máximo
+                return;
+            }
+
+            mostrarMensaje(FacesMessage.SEVERITY_INFO,
+                    "Límite actualizado",
+                    String.format("El nuevo límite de transferencia es ₡%,.2f", limiteTransferencia));
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            mostrarMensaje(FacesMessage.SEVERITY_ERROR,
+                    "Error", "No se pudo aplicar el límite: " + e.getMessage());
+            limiteTransferencia = new BigDecimal("250000"); // Resetear al valor por defecto
+        }
+    }
+
     private void limpiarFormularioSwift() {
         cuentaSwiftOrigenId = 0;
         codigoSwift = null;
@@ -410,7 +478,12 @@ public class CuentaController implements Serializable {
         descripcionReversa = null;
         montoReversa = null;
     }
-
+    
+    private void limpiarConfirmacion() {
+        mostrarConfirmacionTransferencia = false;
+        mensajeConfirmacion = "";
+    }
+    
     // Método de ayuda para mostrar los mensajes correspondientes
     private void mostrarMensaje(FacesMessage.Severity severity, String error, String detallado) {
         FacesContext.getCurrentInstance()
@@ -424,6 +497,18 @@ public class CuentaController implements Serializable {
         }
         return cuentas;
     }
+    
+    public BigDecimal getLimiteTransferencia() { return limiteTransferencia; }
+
+    public void setLimiteTransferencia(BigDecimal limiteTransferencia) { this.limiteTransferencia = limiteTransferencia; }
+
+    public boolean isMostrarConfirmacionTransferencia() { return mostrarConfirmacionTransferencia; }
+
+    public void setMostrarConfirmacionTransferencia(boolean mostrarConfirmacionTransferencia) { this.mostrarConfirmacionTransferencia = mostrarConfirmacionTransferencia; }
+
+    public String getMensajeConfirmacion() { return mensajeConfirmacion; }
+
+    public void setMensajeConfirmacion(String mensajeConfirmacion) { this.mensajeConfirmacion = mensajeConfirmacion; }
 
     public BigDecimal getMontoAhorro() {return montoAhorro;}
 
