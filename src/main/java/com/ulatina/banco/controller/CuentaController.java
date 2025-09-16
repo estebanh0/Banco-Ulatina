@@ -119,35 +119,34 @@ public class CuentaController implements Serializable {
                 return;
             }
             
+            // Verificar si supera el límite
             if (montoDeposito.compareTo(limiteTransferencia) > 0) {
-                
+                // SOLO mostrar confirmación, NO ejecutar transferencia
                 mensajeConfirmacion = String.format(
                         "El monto de la transferencia supera el límite establecido "
-                      + "(₡%,.2f). ¿Desea continuar con la operación?", limiteTransferencia
+                        + "(₡%,.2f). ¿Desea continuar con la operación?", limiteTransferencia
                 );
                 mostrarConfirmacionTransferencia = true;
-                return;
+                return; // IMPORTANTE: Salir aquí para esperar confirmación
             }
-            
-            // Realizar el depósito
+
+            // Si NO supera el límite, ejecutar transferencia normalmente
             boolean exito = cuentaService.realizarTransferencia(cuentaOrigenId, cuentaDepositoId, montoDeposito);
 
             if (exito) {
-                
-                //Monitorear el limite de la transaccion para reportes de SUGEF
+                // Monitorear el limite de la transaccion para reportes de SUGEF
                 sugefController.monitorearTransaccion(clienteId, cuentaOrigenId, "TRANSFERENCIA_INTERNA", montoDeposito);
-                
+
                 mostrarMensaje(FacesMessage.SEVERITY_INFO,
                         "Depósito exitoso", "Se depositaron " + montoDeposito + " con éxito");
 
                 // Refrescar saldos y limpiar el monto
                 cargarCuentas();
                 montoDeposito = null;
-
             } else {
                 mostrarMensaje(FacesMessage.SEVERITY_ERROR,
                         "Error", "No se pudo realizar el depósito");
-            }
+            }                    
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -468,7 +467,6 @@ public class CuentaController implements Serializable {
             e.printStackTrace();
             mostrarMensaje(FacesMessage.SEVERITY_ERROR,
                     "Error", "No se pudo aplicar el límite: " + e.getMessage());
-            limiteTransferencia = new BigDecimal("250000"); // Resetear al valor por defecto
         }
     }
 

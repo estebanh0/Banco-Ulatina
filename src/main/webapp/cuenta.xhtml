@@ -425,7 +425,6 @@
                                  value="#{cuentaController.limiteTransferencia}" 
                                  styleClass="limite-input"
                                  pt:placeholder="250000">
-                        <f:convertNumber type="currency" currencySymbol=""/>
                     </h:inputText>
                     <h:commandButton value="Aplicar" 
                                      styleClass="btn-limite-small"
@@ -512,7 +511,7 @@
                                      value="#{cuentaController.montoDeposito}" 
                                      styleClass="form-input"
                                      pt:placeholder="0.00">
-                            <f:convertNumber type="currency" currencySymbol=""/>
+                            <f:convertNumber pattern="#0.00"/>
                         </h:inputText>
                     </div>
 
