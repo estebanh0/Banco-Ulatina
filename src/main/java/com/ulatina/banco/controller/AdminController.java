@@ -8,6 +8,7 @@ import com.ulatina.banco.model.Cliente;
 import com.ulatina.banco.model.EstadoFinanciero;
 import com.ulatina.banco.model.ReporteGenerado;
 import com.ulatina.banco.model.Reversa;
+import com.ulatina.banco.service.ClienteService;
 import com.ulatina.banco.service.CuentaService;
 import com.ulatina.banco.service.ReporteService;
 import jakarta.faces.application.FacesMessage;
@@ -31,16 +32,19 @@ import java.util.List;
 @ViewScoped
 public class AdminController implements Serializable {
 
-    private List<Reversa> reversasPendientes;
-    private CuentaService cuentaService = new CuentaService();
-    
-    // NUEVO: Propiedades para reportería
-    private ReporteService reporteService = new ReporteService();
     private List<Cliente> clientes;
-    private int clienteSeleccionadoId;
+    private List<Reversa> reversasPendientes;
     private List<ReporteGenerado> reportesGenerados;
-    private static final String DIRECTORIO_REPORTES = "C:/reportes_banco/";
+    
+    private CuentaService cuentaService = new CuentaService();
+    private ClienteService clienteService = new ClienteService();
+    private ReporteService reporteService = new ReporteService();
+    
+    private int clienteSeleccionadoId;
+    private static final String DIRECTORIO_REPORTES
+            = System.getProperty("user.home") + File.separator + "BancoReportes" + File.separator; //se usa de esta manera para tener compatiblidad entre OS
 
+    
     public void cargarReversasPendientes() {
         try {
             //Llamada al metodo para cargar las reversas en estado pendiente en la lista creada.
@@ -58,10 +62,10 @@ public class AdminController implements Serializable {
         }
     }
 
-    // NUEVO: Método para cargar clientes
+    // Obtener todos los clientes
     public void cargarClientes() {
         try {
-            clientes = reporteService.obtenerTodosLosClientes();
+            clientes = clienteService.obtenerTodosLosClientes();
             
             if (clientes.isEmpty()) {
                 mostrarMensaje(FacesMessage.SEVERITY_INFO,
@@ -103,10 +107,8 @@ public class AdminController implements Serializable {
             );
 
             // Generar nombres únicos para archivos
-            String nombreBase = reporte.generarNombreArchivo("");
+            String nombreBase = "estado_financiero_" + clienteSeleccionadoId + "_" + System.currentTimeMillis();
             String rutaXML = DIRECTORIO_REPORTES + nombreBase + ".xml";
-            String rutaCSV = DIRECTORIO_REPORTES + nombreBase + ".csv";
-            String rutaPDF = DIRECTORIO_REPORTES + nombreBase + ".pdf";
 
             // Exportar archivos
             reporteService.exportarXML(estado, rutaXML);
@@ -114,9 +116,7 @@ public class AdminController implements Serializable {
             // Actualizar rutas en el reporte
             reporte.setRutaXML(rutaXML);
             reporte.setTotalActivos(estado.getTotalActivosConsolidado());
-            reporte.setTotalPasivos(BigDecimal.ZERO); // Por ahora no manejamos pasivos
             reporte.setPatrimonioNeto(estado.getPatrimonioNetoConsolidado());
-            // No asignamos numero_cuentas porque no está en la tabla
 
             // Guardar en base de datos
             int reporteId = reporteService.guardarReporte(reporte);
@@ -144,7 +144,6 @@ public class AdminController implements Serializable {
         }
     }
 
-    // NUEVO: Método para cargar reportes generados
     public void cargarReportesGenerados() {
         try {
             reportesGenerados = reporteService.obtenerReportesGenerados();
@@ -201,47 +200,21 @@ public class AdminController implements Serializable {
                 .addMessage(null, new FacesMessage(severity, error, detallado));
     }
 
-    // GETTERS Y SETTERS
-
     public List<Reversa> getReversasPendientes() {
         if (reversasPendientes == null){
-            cargarReversasPendientes();
-        }
-        return reversasPendientes;
-    }
+            cargarReversasPendientes(); }return reversasPendientes;}
+    public void setReversasPendientes(List<Reversa> reversasPendientes) {this.reversasPendientes = reversasPendientes;}
 
-    public void setReversasPendientes(List<Reversa> reversasPendientes) {
-        this.reversasPendientes = reversasPendientes;
-    }
-
-    // NUEVOS: Getters y Setters para reportería
     public List<Cliente> getClientes() {
         if (clientes == null) {
-            cargarClientes();
-        }
-        return clientes;
-    }
+            cargarClientes(); }return clientes;}
+    public void setClientes(List<Cliente> clientes) { this.clientes = clientes; }
 
-    public void setClientes(List<Cliente> clientes) { 
-        this.clientes = clientes; 
-    }
-
-    public int getClienteSeleccionadoId() { 
-        return clienteSeleccionadoId; 
-    }
-    
-    public void setClienteSeleccionadoId(int clienteSeleccionadoId) { 
-        this.clienteSeleccionadoId = clienteSeleccionadoId; 
-    }
+    public int getClienteSeleccionadoId() { return clienteSeleccionadoId; }
+    public void setClienteSeleccionadoId(int clienteSeleccionadoId) { this.clienteSeleccionadoId = clienteSeleccionadoId; }
 
     public List<ReporteGenerado> getReportesGenerados() {
         if (reportesGenerados == null) {
-            cargarReportesGenerados();
-        }
-        return reportesGenerados;
-    }
-
-    public void setReportesGenerados(List<ReporteGenerado> reportesGenerados) { 
-        this.reportesGenerados = reportesGenerados; 
-    }
+            cargarReportesGenerados(); }return reportesGenerados;}
+    public void setReportesGenerados(List<ReporteGenerado> reportesGenerados) { this.reportesGenerados = reportesGenerados; }
 }

@@ -29,17 +29,12 @@ public class ReporteService extends Service {
     private CuentaService cuentaService = new CuentaService();
     private ClienteService clienteService = new ClienteService();
     
-    // Directorio base para guardar reportes
-    private static final String DIRECTORIO_REPORTES = "C:/reportes_banco/";
     
     public EstadoFinanciero generarEstadoFinanciero(int clienteId) 
             throws SQLException, ClassNotFoundException {
         
         // Obtener información del cliente
-        Cliente cliente = buscarClientePorId(clienteId);
-        if (cliente == null) {
-            throw new IllegalArgumentException("Cliente no encontrado");
-        }
+        Cliente cliente = clienteService.buscarClientePorId(clienteId);
         
         // Obtener todas las cuentas del cliente
         List<Cuenta> cuentas = cuentaService.obtenerCuentasPorClienteId(clienteId);
@@ -60,19 +55,16 @@ public class ReporteService extends Service {
             conectarBD();
             
             String sql = "INSERT INTO reporte_generado (cliente_id, nombre_cliente, cedula_cliente, " +
-                        "tipo_reporte, ruta_xml, ruta_csv, ruta_pdf, " +
-                        "total_activos, total_pasivos, patrimonio_neto) " +
-                        "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                         "ruta_xml, total_activos, patrimonio_neto) " +
+                         "VALUES (?, ?, ?, ?, ?, ?)";
             
             ps = conexion.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);
             ps.setInt(1, reporte.getClienteId());
             ps.setString(2, reporte.getNombreCliente());
             ps.setString(3, reporte.getCedulaCliente());
-            ps.setString(4, reporte.getTipoReporte());
-            ps.setString(5, reporte.getRutaXML());
-            ps.setBigDecimal(6, reporte.getTotalActivos());
-            ps.setBigDecimal(7, reporte.getTotalPasivos());
-            ps.setBigDecimal(8, reporte.getPatrimonioNeto());
+            ps.setString(4, reporte.getRutaXML());
+            ps.setBigDecimal(5, reporte.getTotalActivos());
+            ps.setBigDecimal(6, reporte.getPatrimonioNeto());
             
             int resultado = ps.executeUpdate();
             
@@ -117,10 +109,6 @@ public class ReporteService extends Service {
         xml.append("    <CuentasCorrientesCRC>").append(estado.getCuentasCorrientesCRC()).append("</CuentasCorrientesCRC>\n");
         xml.append("    <CuentasCorrientesUSD>").append(estado.getCuentasCorrientesUSD()).append("</CuentasCorrientesUSD>\n");
         xml.append("  </Activos>\n");
-        xml.append("  <Pasivos>\n");
-        xml.append("    <TotalPasivosCRC>").append(estado.getTotalPasivosCRC()).append("</TotalPasivosCRC>\n");
-        xml.append("    <TotalPasivosUSD>").append(estado.getTotalPasivosUSD()).append("</TotalPasivosUSD>\n");
-        xml.append("  </Pasivos>\n");
         xml.append("  <Patrimonio>\n");
         xml.append("    <PatrimonioNetoCRC>").append(estado.getPatrimonioNetoCRC()).append("</PatrimonioNetoCRC>\n");
         xml.append("    <PatrimonioNetoUSD>").append(estado.getPatrimonioNetoUSD()).append("</PatrimonioNetoUSD>\n");
@@ -157,7 +145,7 @@ public class ReporteService extends Service {
             
             String sql = "SELECT id, cliente_id, nombre_cliente, cedula_cliente, tipo_reporte, " +
                         "fecha_generacion, ruta_xml, " +
-                        "total_activos, total_pasivos, patrimonio_neto " +
+                        "total_activos, patrimonio_neto " +
                         "FROM reporte_generado ORDER BY fecha_generacion DESC";
             
             ps = conexion.prepareStatement(sql);
@@ -173,7 +161,6 @@ public class ReporteService extends Service {
                 reporte.setFechaGeneracion(rs.getTimestamp("fecha_generacion"));
                 reporte.setRutaXML(rs.getString("ruta_xml"));
                 reporte.setTotalActivos(rs.getBigDecimal("total_activos"));
-                reporte.setTotalPasivos(rs.getBigDecimal("total_pasivos"));
                 reporte.setPatrimonioNeto(rs.getBigDecimal("patrimonio_neto"));
                 reporte.setNumeroCuentas(0); // Valor por defecto ya que no está en BD
                 reporte.setEstado("GENERADO"); // Valor por defecto ya que no está en BD
@@ -190,67 +177,4 @@ public class ReporteService extends Service {
         return reportes;
     }
     
-    public List<Cliente> obtenerTodosLosClientes() 
-            throws SQLException, ClassNotFoundException {
-        
-        List<Cliente> clientes = new ArrayList<>();
-        PreparedStatement ps = null;
-        ResultSet rs = null;
-        
-        try {
-            conectarBD();
-            String sql = "SELECT id, cedula, nombre, embargo FROM cliente ORDER BY nombre";
-            ps = conexion.prepareStatement(sql);
-            rs = ps.executeQuery();
-            
-            while (rs.next()) {
-                Cliente cliente = new Cliente(
-                    rs.getInt("id"),
-                    rs.getString("cedula"),
-                    rs.getString("nombre"),
-                    rs.getBoolean("embargo")
-                );
-                clientes.add(cliente);
-            }
-            
-        } finally {
-            cerrarResultSet(rs);
-            cerrarPreparedStatement(ps);
-            cerrarConexion();
-        }
-        
-        return clientes;
-    }
-    
-    private Cliente buscarClientePorId(int clienteId) 
-            throws SQLException, ClassNotFoundException {
-        
-        PreparedStatement ps = null;
-        ResultSet rs = null;
-        Cliente cliente = null;
-        
-        try {
-            conectarBD();
-            String sql = "SELECT id, cedula, nombre, embargo FROM cliente WHERE id = ?";
-            ps = conexion.prepareStatement(sql);
-            ps.setInt(1, clienteId);
-            rs = ps.executeQuery();
-            
-            if (rs.next()) {
-                cliente = new Cliente(
-                    rs.getInt("id"),
-                    rs.getString("cedula"),
-                    rs.getString("nombre"),
-                    rs.getBoolean("embargo")
-                );
-            }
-            
-        } finally {
-            cerrarResultSet(rs);
-            cerrarPreparedStatement(ps);
-            cerrarConexion();
-        }
-        
-        return cliente;
-    }
 }

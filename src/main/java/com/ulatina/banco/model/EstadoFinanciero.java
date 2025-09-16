@@ -23,8 +23,6 @@ public class EstadoFinanciero {
     // Totales calculados
     private BigDecimal totalActivosCRC;
     private BigDecimal totalActivosUSD;
-    private BigDecimal totalPasivosCRC;
-    private BigDecimal totalPasivosUSD;
     private BigDecimal patrimonioNetoCRC;
     private BigDecimal patrimonioNetoUSD;
     
@@ -56,8 +54,6 @@ public class EstadoFinanciero {
     private void inicializarTotales() {
         this.totalActivosCRC = BigDecimal.ZERO;
         this.totalActivosUSD = BigDecimal.ZERO;
-        this.totalPasivosCRC = BigDecimal.ZERO;
-        this.totalPasivosUSD = BigDecimal.ZERO;
         this.patrimonioNetoCRC = BigDecimal.ZERO;
         this.patrimonioNetoUSD = BigDecimal.ZERO;
         this.cuentasCorrientesCRC = BigDecimal.ZERO;
@@ -103,8 +99,8 @@ public class EstadoFinanciero {
         }
         
         // Por ahora no tenemos pasivos, así que patrimonio = activos
-        patrimonioNetoCRC = totalActivosCRC.subtract(totalPasivosCRC);
-        patrimonioNetoUSD = totalActivosUSD.subtract(totalPasivosUSD);
+        patrimonioNetoCRC = totalActivosCRC;
+        patrimonioNetoUSD = totalActivosUSD;
         
         totalCuentas = cuentas.size();
     }
@@ -151,12 +147,6 @@ public class EstadoFinanciero {
 
     public BigDecimal getTotalActivosUSD() { return totalActivosUSD; }
     public void setTotalActivosUSD(BigDecimal totalActivosUSD) { this.totalActivosUSD = totalActivosUSD; }
-
-    public BigDecimal getTotalPasivosCRC() { return totalPasivosCRC; }
-    public void setTotalPasivosCRC(BigDecimal totalPasivosCRC) { this.totalPasivosCRC = totalPasivosCRC; }
-
-    public BigDecimal getTotalPasivosUSD() { return totalPasivosUSD; }
-    public void setTotalPasivosUSD(BigDecimal totalPasivosUSD) { this.totalPasivosUSD = totalPasivosUSD; }
 
     public BigDecimal getPatrimonioNetoCRC() { return patrimonioNetoCRC; }
     public void setPatrimonioNetoCRC(BigDecimal patrimonioNetoCRC) { this.patrimonioNetoCRC = patrimonioNetoCRC; }

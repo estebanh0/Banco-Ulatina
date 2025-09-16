@@ -21,7 +21,6 @@ public class ReporteGenerado {
     private String rutaXML;
     private String estado;
     private BigDecimal totalActivos;
-    private BigDecimal totalPasivos;
     private BigDecimal patrimonioNeto;
     private int numeroCuentas;
 
@@ -35,12 +34,6 @@ public class ReporteGenerado {
         this.tipoReporte = tipoReporte;
         this.estado = estado;
         this.fechaGeneracion = new Date();
-    }
-
-    // Método para generar nombre único de archivo
-    public String generarNombreArchivo(String extension) {
-        return String.format("estado_financiero_%d_%d.%s", 
-                clienteId, System.currentTimeMillis(), extension);
     }
 
     // Getters y Setters
@@ -70,9 +63,6 @@ public class ReporteGenerado {
 
     public BigDecimal getTotalActivos() { return totalActivos; }
     public void setTotalActivos(BigDecimal totalActivos) { this.totalActivos = totalActivos; }
-
-    public BigDecimal getTotalPasivos() { return totalPasivos; }
-    public void setTotalPasivos(BigDecimal totalPasivos) { this.totalPasivos = totalPasivos; }
 
     public BigDecimal getPatrimonioNeto() { return patrimonioNeto; }
     public void setPatrimonioNeto(BigDecimal patrimonioNeto) { this.patrimonioNeto = patrimonioNeto; }
