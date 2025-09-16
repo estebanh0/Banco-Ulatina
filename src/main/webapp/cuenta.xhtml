@@ -28,7 +28,7 @@
 
             .cuentas-grid {
                 display: grid;
-                grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+                grid-template-columns: repeat(3, minmax(350px, 1fr));
                 gap: 20px;
                 margin-top: 20px;
             }
@@ -303,12 +303,10 @@
                 background: #333;
                 color: white;
                 border: none;
-                padding: 10px 20px;
-                border-radius: 6px;
-                font-size: 14px;
-                font-weight: bold;
+                padding: 8px 16px;
+                border-radius: 5px;
+                font-size: 13px;
                 cursor: pointer;
-                min-width: 100px;
                 letter-spacing: 1px;
             }
             
@@ -401,6 +399,19 @@
                 width: 120px;
             }
             
+            .btn-bloquear {
+                background: #dc3545;
+                color: white;
+                border: none;
+                padding: 8px 16px;
+                border-radius: 5px;
+                font-size: 13px;
+                cursor: pointer;
+                margin-left: 10px;
+                letter-spacing: 1px;
+            }
+
+            
         </style>
     </h:head>
 
@@ -463,6 +474,16 @@
                                         styleClass="btn-incrementar"
                                         action="#{cuentaController.incrementoSaldoDirecto(cuenta.id)}"
                                         title="Incrementa el saldo en 1000">
+                                        <f:ajax execute="@this" render="@form"/>
+                                    </h:commandButton>
+                                    
+                                    <h:commandButton
+                                        value="Bloquear" 
+                                        styleClass="btn-bloquear"
+                                        action="#{cuentaController.bloquearCuentaBancaria(cuenta.id)}"
+                                        title="Bloquea la cuenta por seguridad"
+                                        rendered="#{cuenta.estado == 'ACTIVA'}"
+                                        onclick="return confirm('¿Está seguro que desea bloquear esta cuenta? Necesitará contactar al banco para desbloquearla.');">
                                         <f:ajax execute="@this" render="@form"/>
                                     </h:commandButton>
                                 </div>

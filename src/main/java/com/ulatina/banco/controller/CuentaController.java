@@ -469,6 +469,47 @@ public class CuentaController implements Serializable {
                     "Error", "No se pudo aplicar el límite: " + e.getMessage());
         }
     }
+    
+    
+    public void bloquearCuentaBancaria(int cuentaId) {
+        try {
+            // Buscar cuenta especifica
+            boolean cuentaValida = false;
+            
+            for (Cuenta cuenta : cuentas) {
+                if (cuenta.getId() == cuentaId && cuenta.getEstado() == Cuenta.EstadoCuenta.ACTIVA) {
+                    cuentaValida = true;
+                    break;
+                }
+            }
+
+            if (!cuentaValida) {
+                mostrarMensaje(FacesMessage.SEVERITY_WARN,
+                        "Advertencia", "Solo se pueden bloquear cuentas activas propias");
+                return;
+            }
+
+            // Bloquear la cuenta
+            boolean exito = cuentaService.bloquearCuenta(cuentaId);
+
+            if (exito) {
+                mostrarMensaje(FacesMessage.SEVERITY_INFO,
+                        "Cuenta bloqueada", "Su cuenta ha sido bloqueada exitosamente. "
+                        + "Para desbloquearla, contacte al banco o visite una sucursal.");
+
+                // Refrescar lista de cuentas para mostrar el nuevo estado
+                cargarCuentas();
+            } else {
+                mostrarMensaje(FacesMessage.SEVERITY_ERROR,
+                        "Error", "No se pudo bloquear la cuenta. Intente nuevamente.");
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            mostrarMensaje(FacesMessage.SEVERITY_ERROR,
+                    "Error del sistema", "Error al bloquear la cuenta: " + e.getMessage());
+        }
+    }
 
     private void limpiarFormularioSwift() {
         cuentaSwiftOrigenId = 0;

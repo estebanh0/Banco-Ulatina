@@ -28,6 +28,7 @@ import java.util.List;
  * - Metodos correspondientes para transferencias tanto sinpe como entre cuentas bancarias 
  * - Funcionalidad de reversas
  */
+
 public class CuentaService extends Service {
     
     public List<Cuenta> obtenerCuentasPorClienteId(int clienteId) 
@@ -293,5 +294,26 @@ public class CuentaService extends Service {
         }
     }
     
+    public boolean bloquearCuenta(int cuentaId)
+            throws SQLException, ClassNotFoundException {
+
+        PreparedStatement ps = null;
+
+        try {
+            conectarBD();
+
+            // Cambiar estado a BLOQUEADA
+            String sql = "UPDATE cuenta SET estado = 'BLOQUEADA' WHERE id = ? AND estado = 'ACTIVA'";
+            ps = conexion.prepareStatement(sql);
+            ps.setInt(1, cuentaId);
+            int resultado = ps.executeUpdate();
+
+            return resultado > 0;
+
+        } finally {
+            cerrarPreparedStatement(ps);
+            cerrarConexion();
+        }
+    }
 
 }
