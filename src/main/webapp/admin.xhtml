@@ -111,6 +111,141 @@
                 border-radius: 10px;
                 color: #666;
             }
+
+            .reporte-section {
+                margin-top: 40px;
+                background: white;
+                border-radius: 10px;
+                padding: 30px;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                border-left: 5px solid #28a745;
+            }
+
+            .reporte-title {
+                font-size: 20px;
+                font-weight: bold;
+                color: #28a745;
+                margin-bottom: 20px;
+            }
+
+            .form-group {
+                margin-bottom: 15px;
+            }
+
+            .form-label {
+                display: block;
+                font-weight: bold;
+                margin-bottom: 5px;
+                color: #333;
+            }
+
+            .form-select {
+                width: 100%;
+                padding: 10px;
+                border: 1px solid #ddd;
+                border-radius: 5px;
+                font-size: 14px;
+                max-width: 400px;
+            }
+
+            .btn-generar {
+                background: #28a745;
+                color: white;
+                border: none;
+                padding: 12px 20px;
+                border-radius: 5px;
+                font-size: 14px;
+                cursor: pointer;
+                margin-top: 10px;
+            }
+
+            .btn-generar:hover {
+                background: #218838;
+            }
+
+            .reportes-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+                gap: 20px;
+                margin-top: 30px;
+            }
+
+            .reporte-card {
+                background: #f8f9fa;
+                border-radius: 8px;
+                padding: 20px;
+                border-left: 4px solid #17a2b8;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            }
+
+            .reporte-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 15px;
+                border-bottom: 1px solid #dee2e6;
+                padding-bottom: 10px;
+            }
+
+            .reporte-info {
+                margin-bottom: 8px;
+                font-size: 14px;
+            }
+
+            .reporte-info strong {
+                color: #495057;
+                display: inline-block;
+                width: 120px;
+            }
+
+            .descargas {
+                margin-top: 15px;
+                display: flex;
+                gap: 10px;
+                flex-wrap: wrap;
+            }
+
+            .btn-descarga {
+                background: #007bff;
+                color: white;
+                text-decoration: none;
+                padding: 8px 16px;
+                border-radius: 4px;
+                font-size: 12px;
+                font-weight: bold;
+                transition: background-color 0.2s;
+            }
+
+            .btn-descarga:hover {
+                background: #0056b3;
+                text-decoration: none;
+                color: white;
+            }
+
+            .estado-badge-reporte {
+                padding: 4px 8px;
+                border-radius: 12px;
+                font-size: 11px;
+                font-weight: bold;
+                text-transform: uppercase;
+                background: #d4edda;
+                color: #155724;
+            }
+
+            .totales-financieros {
+                background: #e8f4fd;
+                padding: 10px;
+                border-radius: 5px;
+                margin-top: 10px;
+                font-size: 13px;
+            }
+
+            .sin-reportes {
+                text-align: center;
+                padding: 30px;
+                color: #6c757d;
+                font-style: italic;
+            }
         </style>
     </h:head>
 
@@ -118,11 +253,16 @@
         <div class="container">
             <div class="header">
                 <h1>Panel de Administración</h1>
-                <h2>Solicitudes de Reversa Pendientes</h2>
+                <h2>Gestión de Reversas y Reportería Financiera</h2>
             </div>
 
             <h:form>
                 <h:messages id="msgs" globalOnly="true" showDetail="true" />
+
+                <!-- SECCIÓN DE REVERSAS PENDIENTES -->
+                <h2 style="color: #dc3545; border-bottom: 2px solid #dc3545; padding-bottom: 10px;">
+                    Solicitudes de Reversa Pendientes
+                </h2>
 
                 <h:panelGroup rendered="#{not empty adminController.reversasPendientes}">
                     <ui:repeat value="#{adminController.reversasPendientes}" var="reversa">
@@ -175,6 +315,87 @@
                         <p>No existen solicitudes de reversa pendientes de aprobación.</p>
                     </div>
                 </h:panelGroup>
+
+                <!-- NUEVA SECCIÓN: Generación de Estados Financieros -->
+                <div class="reporte-section">
+                    <div class="reporte-title">
+                        Generación de Estados Financieros
+                    </div>
+                    <p style="color: #666; margin-bottom: 20px;">
+                        Genere reportes completos en formato XML, CSV y PDF para cumplimiento regulatorio SUGEF
+                    </p>
+
+                    <div class="form-group">
+                        <h:outputLabel for="clienteSeleccionado" value="Seleccionar Cliente:" styleClass="form-label" />
+                        <h:selectOneMenu id="clienteSeleccionado" 
+                                         value="#{adminController.clienteSeleccionadoId}" 
+                                         styleClass="form-select">
+                            <f:selectItem itemValue="0" itemLabel="-- Seleccione un cliente --" />
+                            <f:selectItems value="#{adminController.clientes}" var="cliente" 
+                                           itemValue="#{cliente.id}" 
+                                           itemLabel="#{cliente.nombre} - #{cliente.cedula}" />
+                        </h:selectOneMenu>
+                    </div>
+
+                    <h:commandButton value="Generar Estado Financiero" 
+                                     styleClass="btn-generar"
+                                     action="#{adminController.generarEstadoFinanciero()}">
+                        <f:ajax execute="@form" render="@form"/>
+                    </h:commandButton>
+
+                    <!-- Tabla de reportes generados -->
+                    <h:panelGroup rendered="#{not empty adminController.reportesGenerados}">
+                        <h3 style="margin-top: 40px; color: #333; border-bottom: 2px solid #dee2e6; padding-bottom: 10px;">
+                            Reportes Generados Recientemente
+                        </h3>
+
+                        <div class="reportes-grid">
+                            <ui:repeat value="#{adminController.reportesGenerados}" var="reporte">
+                                <div class="reporte-card">
+                                    <div class="reporte-header">
+                                        <h4 style="margin: 0; color: #495057;">
+                                            Reporte ##{reporte.id}
+                                        </h4>
+                                        <span class="estado-badge-reporte">#{reporte.estado}</span>
+                                    </div>
+
+                                    <div class="reporte-info">
+                                        <strong>Cliente:</strong> #{reporte.nombreCliente}
+                                    </div>
+                                    <div class="reporte-info">
+                                        <strong>Cédula:</strong> #{reporte.cedulaCliente}
+                                    </div>
+                                    <div class="reporte-info">
+                                        <strong>Fecha:</strong> 
+                                        <h:outputText value="#{reporte.fechaGeneracion}">
+                                            <f:convertDateTime pattern="dd/MM/yyyy HH:mm" />
+                                        </h:outputText>
+                                    </div>
+
+                                    <div class="totales-financieros">
+                                        <div style="font-weight: bold; margin-bottom: 5px;">Resumen Financiero:</div>
+                                        <div>Total Activos: 
+                                            <h:outputText value="#{reporte.totalActivos}">
+                                                <f:convertNumber type="currency" currencySymbol="₡" />
+                                            </h:outputText>
+                                        </div>
+                                        <div>Patrimonio Neto: 
+                                            <h:outputText value="#{reporte.patrimonioNeto}">
+                                                <f:convertNumber type="currency" currencySymbol="₡" />
+                                            </h:outputText>
+                                        </div>
+                                    </div>
+                                </div>
+                            </ui:repeat>
+                        </div>
+                    </h:panelGroup>
+
+                    <h:panelGroup rendered="#{empty adminController.reportesGenerados}">
+                        <div class="sin-reportes">
+                            <p>No se han generado reportes aún. Seleccione un cliente y genere su primer estado financiero.</p>
+                        </div>
+                    </h:panelGroup>
+                </div>
             </h:form>
         </div>
     </h:body>
