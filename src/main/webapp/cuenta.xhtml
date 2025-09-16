@@ -410,7 +410,85 @@
                 margin-left: 10px;
                 letter-spacing: 1px;
             }
+            
+            .reclamos-section {
+                margin-top: 40px;
+                background: white;
+                border-radius: 10px;
+                padding: 30px;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                border-left: 5px solid #fd7e14;
+            }
 
+            .reclamos-title {
+                font-size: 20px;
+                font-weight: bold;
+                color: #fd7e14;
+                margin-bottom: 20px;
+            }
+            
+
+            .form-textarea-reclamo {
+                width: 100%;
+                padding: 12px;
+                border: 1px solid #ddd;
+                border-radius: 5px;
+                font-size: 14px;
+                resize: vertical;
+                min-height: 100px;
+                max-width: 500px;
+                font-family: Arial;
+            }
+
+            .btn-reclamo {
+                background: #fd7e14;
+                color: white;
+                border: none;
+                padding: 12px 20px;
+                border-radius: 5px;
+                font-size: 14px;
+                cursor: pointer;
+                margin-top: 10px;
+            }
+
+            .btn-reclamo:hover {
+                background: #e8650e;
+            }
+
+            .historial-reclamos {
+                margin-top: 30px;
+                border-top: 1px solid #eee;
+                padding-top: 20px;
+            }
+
+            .reclamo-historial-card {
+                background: #f8f9fa;
+                border-radius: 8px;
+                padding: 15px;
+                margin-bottom: 15px;
+                border-left: 3px solid #fd7e14;
+            }
+
+            .numero-ticket {
+                font-weight: bold;
+                color: #fd7e14;
+                font-size: 16px;
+                margin-bottom: 10px;
+            }
+
+            .fecha-reclamo {
+                font-size: 12px;
+                color: #666;
+                margin-bottom: 8px;
+            }
+            
+            .estado{
+                font-size: 12px;
+                color: #666;
+                margin-bottom: 8px;
+            }
+
+            
             
         </style>
     </h:head>
@@ -760,6 +838,67 @@
                     </div>
                 </div>
                 
+                <!-- Sistema de Atención y Reclamos -->
+                <div class="reclamos-section">
+                    <div class="reclamos-title">Sistema de Atención y Reclamos</div>
+
+                    <div class="form-group">
+                        <h:outputLabel for="correoReclamo" value="Correo electrónico:" styleClass="form-label" />
+                        <h:inputText id="correoReclamo" 
+                                     value="#{reclamoController.correoElectronico}" 
+                                     styleClass="form-input"
+                                     pt:placeholder="ejemplo@correo.com" />
+                    </div>
+
+                    <div class="form-group">
+                        <h:outputLabel for="descripcionReclamo" value="Descripción del reclamo:" styleClass="form-label" />
+                        <h:inputTextarea id="descripcionReclamo" 
+                                         value="#{reclamoController.descripcion}" 
+                                         styleClass="form-textarea-reclamo"
+                                         pt:placeholder="Describa detalladamente su reclamo o consulta..." 
+                                         rows="4" />
+                    </div>
+
+                    <h:commandButton value="Enviar Reclamo" 
+                                     styleClass="btn-reclamo"
+                                     action="#{reclamoController.crearReclamo()}">
+                        <f:ajax execute="@form" render="@form"/>
+                    </h:commandButton>
+
+                    
+                    <!-- Historial de reclamos del cliente -->
+                    <h:panelGroup rendered="#{not empty reclamoController.reclamosCliente}">
+                        <div class="historial-reclamos">
+                            <h3>Mis Reclamos Anteriores</h3>
+                            <ui:repeat value="#{reclamoController.reclamosCliente}" var="reclamo">
+                                <div class="reclamo-historial-card">
+                                    <div class="numero-ticket">Ticket: #{reclamo.numeroTicket}</div>
+
+                                    <div class="fecha-reclamo">
+                                        Fecha: <h:outputText value="#{reclamo.fechaCreacion}">
+                                            <f:convertDateTime pattern="dd/MM/yyyy HH:mm" />
+                                        </h:outputText>
+                                    </div>
+
+                                    <div class="estado">
+                                        Estado: <span class="estado-badge">#{reclamo.estado}</span>
+                                    </div>
+
+                                    <div style="margin-top: 10px;">
+                                        <strong>Correo:</strong> #{reclamo.correoElectronico}
+                                    </div>
+
+                                    <div style="margin-top: 10px;">
+                                        <strong>Descripción:</strong>
+                                        <div style="margin-top: 5px;">
+                                            <h:outputText value="#{reclamo.descripcion}" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </ui:repeat>
+                        </div>
+                    </h:panelGroup>
+                </div> 
             </h:form>
         </div>
     </h:body>
